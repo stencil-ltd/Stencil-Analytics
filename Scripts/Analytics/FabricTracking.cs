@@ -1,10 +1,8 @@
 ﻿#if STENCIL_FABRIC
 using System.Collections.Generic;
-using Analytics;
 using Fabric.Answers;
 using Fabric.Crashlytics;
 using Fabric.Internal.ThirdParty.MiniJSON;
-using Facebook.MiniJSON;
 
 namespace Analytics
 {
