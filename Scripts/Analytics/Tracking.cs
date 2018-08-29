@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Dev;
+using Fabric.Crashlytics;
 using Debug = UnityEngine.Debug;
 
 namespace Analytics
@@ -44,6 +46,21 @@ namespace Analytics
             if (!Enabled) return this;
             foreach (var tracker in _trackers) tracker.SetUserProperty(name, value);
             return this;
+        }
+        
+
+        public static void Record(string message)
+        {
+            Debug.Log(message);
+        }
+
+        public static void Warn(string message)
+        {
+            var stacktrace = new StackTrace(1, true);
+            Debug.LogWarning($"Warning: {message} - {stacktrace}");
+            #if UNITY_FABRIC
+            Crashlytics.RecordCustomException("Warning", message, stacktrace);
+            #endif
         }
     }
 }
