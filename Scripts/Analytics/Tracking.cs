@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Dev;
 using Debug = UnityEngine.Debug;
 
-#if UNITY_FABRIC
+#if STENCIL_FABRIC
 using Fabric.Crashlytics;
 #endif
 
@@ -61,9 +62,17 @@ namespace Analytics
         {
             var stacktrace = new StackTrace(1, true);
             Debug.LogWarning($"Warning: {message} - {stacktrace}");
-            #if UNITY_FABRIC
+            #if STENCIL_FABRIC
             Crashlytics.RecordCustomException("Warning", message, stacktrace);
             #endif
+        }
+
+        public static void WarnIfNull(object thing, 
+            [CallerLineNumber] int line = 0,
+            [CallerMemberName] string name = "")
+        {
+            if (thing == null)
+                Warn($"[{line}] Null Reference: {name}");
         }
     }
 }
