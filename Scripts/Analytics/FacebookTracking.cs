@@ -9,7 +9,8 @@ namespace Analytics
     {
         public ITracker Track(string name, Dictionary<string, object> eventData)
         {
-            FB.LogAppEvent(name, null, eventData);
+            if (FB.IsInitialized)
+                FB.LogAppEvent(name, null, eventData);
             return this;
         }
 
