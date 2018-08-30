@@ -2,8 +2,11 @@
 using System.Diagnostics;
 using System.Linq;
 using Dev;
-using Fabric.Crashlytics;
 using Debug = UnityEngine.Debug;
+
+#if UNITY_FABRIC
+using Fabric.Crashlytics;
+#endif
 
 namespace Analytics
 {
