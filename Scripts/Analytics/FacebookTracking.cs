@@ -1,4 +1,4 @@
-﻿#if STENCIL_FACEBOOK
+﻿#if !EXCLUDE_FACEBOOK
 
 using System.Collections.Generic;
 using Facebook.Unity;

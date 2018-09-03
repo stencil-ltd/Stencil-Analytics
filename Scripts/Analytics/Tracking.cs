@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Dev;
 using Debug = UnityEngine.Debug;
 
-#if STENCIL_FABRIC
+#if !EXCLUDE_FABRIC
 using Fabric.Crashlytics;
 #endif
 
@@ -23,15 +23,15 @@ namespace Analytics
         {
             _trackers.Add(new UnityTracking());
             
-            #if STENCIL_FIREBASE
+            #if !EXCLUDE_FIREBASE
             _trackers.Add(new FirebaseTracking());
             #endif
             
-            #if STENCIL_FABRIC
+            #if !EXCLUDE_FABRIC
             _trackers.Add(new FabricTracking());
             #endif
             
-            #if STENCIL_FACEBOOK
+            #if !EXCLUDE_FACEBOOK
             _trackers.Add(new FacebookTracking());
             #endif
         }
@@ -65,7 +65,7 @@ namespace Analytics
         {
             var stacktrace = new StackTrace(1, true);
             Debug.LogWarning($"Warning: {message} - {stacktrace}");
-            #if STENCIL_FABRIC
+            #if !EXCLUDE_FABRIC
             Crashlytics.RecordCustomException("Warning", message, stacktrace);
             #endif
         }
