@@ -38,17 +38,20 @@ namespace Analytics
 
         public ITracker Track(string name, Dictionary<string, object> eventData = null)
         {
-            if (!Enabled) return this;
             var json = eventData == null ? "[]" : string.Join(", ", eventData.ToList());
-            Debug.Log($"Track Event {name}\n{json}");
-            foreach (var tracker in _trackers) tracker.Track(name, eventData);
+            Debug.Log($"Track Event: {name}\n{json}");
+            if (Enabled)
+                foreach (var tracker in _trackers)
+                    tracker.Track(name, eventData);
             return this;
         }
 
         public ITracker SetUserProperty(string name, object value)
         {
-            if (!Enabled) return this;
-            foreach (var tracker in _trackers) tracker.SetUserProperty(name, value);
+            Debug.Log($"User Property: {name} = {value}");
+            if (Enabled)
+                foreach (var tracker in _trackers)
+                    tracker.SetUserProperty(name, value);
             return this;
         }
         
