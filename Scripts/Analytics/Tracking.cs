@@ -54,7 +54,15 @@ namespace Analytics
                     tracker.SetUserProperty(name, value);
             return this;
         }
-        
+
+        public static void Report(string name, string reason, string stackTraceString)
+        {
+            #if !EXCLUDE_FABRIC
+                Crashlytics.RecordCustomException(name, reason, stackTraceString);
+            #else
+                Debug.LogError($"{name}: {reason}");
+            #endif
+        }
 
         public static void Record(string message)
         {
