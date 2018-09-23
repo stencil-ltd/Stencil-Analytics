@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Dev;
+using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
 
 #if !EXCLUDE_FABRIC
@@ -38,6 +39,9 @@ namespace Analytics
 
         public ITracker Track(string name, Dictionary<string, object> eventData = null)
         {
+            name = Sanitize(name);
+            eventData = Sanitize(eventData);
+            
             var json = eventData == null ? "[]" : string.Join(", ", eventData.ToList());
             Debug.Log($"Track Event: {name}\n{json}");
             if (Enabled)
@@ -48,6 +52,8 @@ namespace Analytics
 
         public ITracker SetUserProperty(string name, object value)
         {
+            name = Sanitize(name);
+            value = SanitizeObject(value);
             Debug.Log($"User Property: {name} = {value}");
             if (Enabled)
                 foreach (var tracker in _trackers)
@@ -84,6 +90,32 @@ namespace Analytics
         {
             if (thing == null)
                 Warn($"[{line}] Null Reference: {name}");
+        }
+
+        private static string Sanitize([CanBeNull] string name)
+        {
+            return name?.Replace(".", "_").Replace(" ", "_").Replace("-", "_") ?? "";
+        }
+
+        private static object SanitizeObject([CanBeNull] object obj)
+        {
+            if (obj == null) return null;
+            if (obj is string) obj = Sanitize((string) obj);
+            return obj;
+        }
+
+        [CanBeNull]
+        private static Dictionary<string, object> Sanitize([CanBeNull] Dictionary<string, object> eventData)
+        {
+            if (eventData == null) return null;
+            var dict = new Dictionary<string, object>();
+            foreach (var kv in eventData)
+            {
+                var key = Sanitize(kv.Key);
+                var val = SanitizeObject(kv.Value);
+                dict[key] = val;
+            }
+            return dict;
         }
     }
 }
