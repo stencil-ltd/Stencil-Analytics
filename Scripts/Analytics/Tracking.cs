@@ -6,8 +6,12 @@ using Dev;
 using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
 
-#if !EXCLUDE_FABRIC
+#if !EXCLUDE_FABRIC && !NEW_CRASHLYTICS
 using Fabric.Crashlytics;
+#endif
+
+#if NEW_CRASHLYTICS
+using Firebase.Crashlytics;
 #endif
 
 namespace Analytics
@@ -28,7 +32,7 @@ namespace Analytics
             _trackers.Add(new FirebaseTracking());
             #endif
             
-            #if !EXCLUDE_FABRIC
+            #if !EXCLUDE_FABRIC && !NEW_CRASHLYTICS
             _trackers.Add(new FabricTracking());
             #endif
             
@@ -79,7 +83,7 @@ namespace Analytics
         {
             var stacktrace = new StackTrace(1, true);
             Debug.LogWarning($"Warning: {message} - {stacktrace}");
-            #if !EXCLUDE_FABRIC
+            #if !EXCLUDE_FABRIC || NEW_CRASHLYTICS
             Crashlytics.RecordCustomException("Warning", message, stacktrace);
             #endif
         }

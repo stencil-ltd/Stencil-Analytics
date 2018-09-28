@@ -2,8 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Analytics;
 using Firebase.Analytics;
+
+#if NEW_CRASHLYTICS
+using Facebook.MiniJSON;
+using Firebase.Crashlytics;
+#endif
 
 namespace Analytics
 {
@@ -30,12 +34,19 @@ namespace Analytics
                 }).ToArray());
             }
 
+            #if NEW_CRASHLYTICS
+            Crashlytics.Log($"{name}: {Json.Serialize(eventData)}");
+            #endif
             return this;
         }
 
         public ITracker SetUserProperty(string name, object value)
         {
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
+            #if NEW_CRASHLYTICS
+            Crashlytics.Log($"Set Property {name} = {value}");
+            Crashlytics.SetKeyValue(name, value?.ToString());
+            #endif
             return this;
         }
     }
