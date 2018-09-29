@@ -2,26 +2,43 @@ using System;
 using System.Collections.Generic;
 using Dev;
 using Firebase.RemoteConfig;
+using UnityEngine;
 using Util;
 
 namespace Scripts.RemoteConfig
 {
     public static class StencilRemote
     {
+        public static int CacheHours = 1;
+        
         public static event EventHandler OnRemoteConfig;
         public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
         
-        public static ConfigValue GetValue(string key, bool fallbackToProd = true)
+        public static long GetProdVersion()
         {
-            var value = FirebaseRemoteConfig.GetValue(key.Process());
-            if (fallbackToProd && Developers.Enabled && !value.HasValue())
-                value = FirebaseRemoteConfig.GetValue(key);
+            return GetValue("version", true).LongValue(long.MaxValue);
+        }
+        
+        public static bool IsProd()
+        {
+            if (Developers.Enabled) return false;
+            var localVersion = Convert.ToInt64(Application.version);
+            return localVersion <= GetProdVersion();
+        }
+
+        public static ConfigValue GetValue(string key, bool forceProd = false)
+        {
+            var orig = key;
+            if (!forceProd) key = key.Process();
+            var value = FirebaseRemoteConfig.GetValue(key);
+            if (!IsProd() && !value.HasValue())
+                value = FirebaseRemoteConfig.GetValue(orig);
             return value;
         }
 
         private static string Process(this string key)
         {
-            if (Developers.Enabled) return $"{key}_debug";
+            if (Developers.Enabled || !IsProd()) return $"{key}_debug";
             return key;
         }
         
