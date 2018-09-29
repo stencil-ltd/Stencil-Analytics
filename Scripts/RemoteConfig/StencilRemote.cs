@@ -7,8 +7,13 @@ namespace Scripts.RemoteConfig
 {
     public static class StencilRemote
     {
-        public static ConfigValue GetValue(string key) 
-            => FirebaseRemoteConfig.GetValue(key.Process());
+        public static ConfigValue GetValue(string key, bool fallbackToProd = true)
+        {
+            var value = FirebaseRemoteConfig.GetValue(key.Process());
+            if (fallbackToProd && Developers.Enabled && !value.HasValue())
+                value = FirebaseRemoteConfig.GetValue(key);
+            return value;
+        }
 
         private static string Process(this string key)
         {
