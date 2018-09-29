@@ -22,6 +22,12 @@ namespace Scripts.RemoteConfig
             set { PlayerPrefsX.SetBool("stencil_been_prod", value); }
         }
         
+        public static ConfigValue? GetProdVersionValue()
+        {
+            if (!GameInit.FirebaseReady) return null;
+            return FirebaseRemoteConfig.GetValue("version");
+        }
+        
         public static long GetProdVersion()
         {
             if (!GameInit.FirebaseReady) return long.MaxValue;
@@ -31,12 +37,24 @@ namespace Scripts.RemoteConfig
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
-            if (!GameInit.FirebaseReady) return true;
-            if (HasBeenProd) return true;
+            if (!GameInit.FirebaseReady)
+            {
+                Debug.Log("Prod Check Skipped: Not ready.");
+                return true;
+            }
+            if (HasBeenProd)
+            {
+                Debug.Log("Prod Check: This is a prod device forever");
+                return true;
+            }
             var localVersion = VersionCodes.GetVersionCode();
-            var prodVersion = GetProdVersion();
-            Debug.Log($"Prod Check: {localVersion} -> {prodVersion}");
-            var retval = localVersion <= prodVersion;
+            var prodVersion = GetProdVersionValue();
+            if (prodVersion == null || !prodVersion.Value.HasValue())
+                return true;
+
+            var version = prodVersion.Value.LongValue;
+            Debug.Log($"Prod Check: {localVersion} -> {version}");
+            var retval = localVersion <= version;
             if (retval) HasBeenProd = true;
             return retval;
         }
