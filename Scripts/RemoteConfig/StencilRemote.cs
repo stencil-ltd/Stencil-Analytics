@@ -15,6 +15,12 @@ namespace Scripts.RemoteConfig
         
         public static event EventHandler OnRemoteConfig;
         public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
+
+        private static bool HasBeenProd
+        {
+            get { return PlayerPrefsX.GetBool("stencil_been_prod"); }
+            set { PlayerPrefsX.SetBool("stencil_been_prod", value); }
+        }
         
         public static long GetProdVersion()
         {
@@ -26,10 +32,13 @@ namespace Scripts.RemoteConfig
         {
             if (Developers.Enabled) return false;
             if (!GameInit.FirebaseReady) return true;
+            if (HasBeenProd) return true;
             var localVersion = VersionCodes.GetVersionCode();
             var prodVersion = GetProdVersion();
             Debug.Log($"Prod Check: {localVersion} -> {prodVersion}");
-            return localVersion <= prodVersion;
+            var retval = localVersion <= prodVersion;
+            if (retval) HasBeenProd = true;
+            return retval;
         }
 
         public static ConfigValue GetValue(string key, bool forceProd = false)
