@@ -11,7 +11,7 @@ namespace Util
 {
     public static class RemoteConfigExtensions
     {  
-    #if !EXCLUDE_FIREBASE
+#if !EXCLUDE_FIREBASE
         public static bool HasValue(this ConfigValue value)
         {
             return value.Source != ValueSource.StaticValue;
@@ -36,45 +36,45 @@ namespace Util
         }
 
         public static long LongValue(this ConfigValue value, long defaultValue)
-                 {
-                     return value.HasValue() ? value.LongValue : defaultValue;
-                 }
+        {
+            return value.HasValue() ? value.LongValue : defaultValue;
+        }
          
-                 public static string StringValue(this ConfigValue value, string defaultValue)
-                 {
-                     return value.HasValue() ? value.StringValue : defaultValue;
-                 }
+        public static string StringValue(this ConfigValue value, string defaultValue)
+        {
+            return value.HasValue() ? value.StringValue : defaultValue;
+        }
                  
-                 public static bool BoolValue(this ConfigValue value, bool defaultValue)
-                 {
-                     return value.HasValue() ? value.BooleanValue : defaultValue;
-                 }
+        public static bool BoolValue(this ConfigValue value, bool defaultValue)
+        {
+            return value.HasValue() ? value.BooleanValue : defaultValue;
+        }
                  
-                 public static double DoubleValue(this ConfigValue value, double defaultValue)
-                 {
-                     return value.HasValue() ? value.DoubleValue : defaultValue;
-                 }
+        public static double DoubleValue(this ConfigValue value, double defaultValue)
+        {
+            return value.HasValue() ? value.DoubleValue : defaultValue;
+        }
                  
-                 public static float FloatValue(this ConfigValue value, float defaultValue)
-                 {
-                     return value.HasValue() ? (float) value.DoubleValue : defaultValue;
-                 }
+        public static float FloatValue(this ConfigValue value, float defaultValue)
+        {
+            return value.HasValue() ? (float) value.DoubleValue : defaultValue;
+        }
                  
-                 public static IEnumerable<byte> ByteArrayValue(this ConfigValue value, IEnumerable<byte> defaultValue)
-                 {
-                     return value.HasValue() ? value.ByteArrayValue : defaultValue;
-                 }
+        public static IEnumerable<byte> ByteArrayValue(this ConfigValue value, IEnumerable<byte> defaultValue)
+        {
+            return value.HasValue() ? value.ByteArrayValue : defaultValue;
+        }
                  
-                 public static int IntValue(this ConfigValue value, int defaultValue)
-                 {
-                     return value.HasValue() ? (int) value.LongValue : defaultValue;
-                 }
+        public static int IntValue(this ConfigValue value, int defaultValue)
+        {
+            return value.HasValue() ? (int) value.LongValue : defaultValue;
+        }
 
         public static bool TypeEquals<T>(this Type t)
         {
             return t.IsEquivalentTo(typeof(T));
         }
-    #else
+#else
         public static void BindRemoteConfig(this object obj)
         {
             Debug.LogError("Firebase is not linked. Not binding to remote config.");

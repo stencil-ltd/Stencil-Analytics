@@ -23,9 +23,9 @@ namespace Scripts.RemoteConfig
             {
                 var myAttr = field.GetCustomAttribute<RemoteField>();
                 var config = StencilRemote.GetValue(myAttr.Key);
-                if (config.HasValue())
+                if (config?.HasValue() ?? false)
                 {
-                    var value = config.GetValue(field.FieldType);
+                    var value = config.Value.GetValue(field.FieldType);
                     Debug.Log($"RemoteConfig: {obj} is setting {myAttr.Key} to {value}");
                     field.SetValue(obj, value);
                 }
@@ -38,9 +38,9 @@ namespace Scripts.RemoteConfig
             {
                 var myAttr = prop.GetCustomAttribute<RemoteField>();
                 var config = StencilRemote.GetValue(myAttr.Key);
-                if (config.HasValue())
+                if (config?.HasValue() ?? false)
                 {
-                    var value = config.GetValue(prop.PropertyType);
+                    var value = config.Value.GetValue(prop.PropertyType);
                     Debug.Log($"RemoteConfig: {obj} is setting ${myAttr.Key} to {value}");
                     prop.SetValue(obj, value);
                 }
