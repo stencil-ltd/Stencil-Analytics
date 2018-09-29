@@ -25,8 +25,11 @@ namespace Scripts.RemoteConfig
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
+            if (!GameInit.FirebaseReady) return true;
             var localVersion = VersionCodes.GetVersionCode();
-            return localVersion <= GetProdVersion();
+            var prodVersion = GetProdVersion();
+            Debug.Log($"Prod Check: {localVersion} -> {prodVersion}");
+            return localVersion <= prodVersion;
         }
 
         public static ConfigValue GetValue(string key, bool forceProd = false)
