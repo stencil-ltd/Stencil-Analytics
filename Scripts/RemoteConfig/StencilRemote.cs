@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Dev;
 using Firebase.RemoteConfig;
@@ -7,6 +8,9 @@ namespace Scripts.RemoteConfig
 {
     public static class StencilRemote
     {
+        public static event EventHandler OnRemoteConfig;
+        public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
+        
         public static ConfigValue GetValue(string key, bool fallbackToProd = true)
         {
             var value = FirebaseRemoteConfig.GetValue(key.Process());
