@@ -4,8 +4,11 @@ using System.Linq;
 using System.Reflection;
 using Binding;
 using Dev;
-using Firebase.RemoteConfig;
 using UnityEngine;
+
+#if !EXCLUDE_FIREBASE
+using Firebase.RemoteConfig;
+#endif
 
 namespace Util
 {

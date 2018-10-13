@@ -1,20 +1,28 @@
 using System;
 using System.Collections.Generic;
 using Dev;
-using Firebase.RemoteConfig;
 using Init;
 using UnityEngine;
 using Util;
 using Versions;
 
+#if !EXCLUDE_FIREBASE
+using Firebase.RemoteConfig;
+#endif
+
 namespace Scripts.RemoteConfig
 {
     public static class StencilRemote
     {
-        public static int CacheHours = 1;
-        
         public static event EventHandler OnRemoteConfig;
         public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
+        
+#if EXCLUDE_FIREBASE
+
+        public static bool IsProd() => true;
+        
+#else
+        public static int CacheHours = 1;
 
         private static bool HasBeenProd
         {
@@ -115,5 +123,6 @@ namespace Scripts.RemoteConfig
         {
             return GetValue(key.Process()).ByteArrayValue(defaultValue);
         }
+    #endif
     }
 }
