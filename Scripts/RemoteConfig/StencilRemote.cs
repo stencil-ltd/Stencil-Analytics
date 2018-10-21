@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Dev;
 using Init;
 using UnityEngine;
 using Util;
 using Versions;
-
+using Developers = Dev.Developers;
 #if !EXCLUDE_FIREBASE
 using Firebase.RemoteConfig;
 #endif
