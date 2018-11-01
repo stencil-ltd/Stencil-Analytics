@@ -40,7 +40,8 @@ namespace Scripts.RemoteConfig
             if (!GameInit.FirebaseReady) return long.MaxValue;
             return FirebaseRemoteConfig.GetValue("version").LongValue(long.MaxValue);
         }
-        
+
+        public static bool IsDeveloper() => !IsProd(); // because I'm an idiot who can't think
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
