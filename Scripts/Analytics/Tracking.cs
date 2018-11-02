@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -65,13 +66,14 @@ namespace Analytics
             return this;
         }
 
-        public static void Report(string name, string reason, string stackTraceString)
+        public static void Report(string name, string reason = null, string stackTraceString = null)
         {
-            #if !EXCLUDE_FABRIC
-                Crashlytics.RecordCustomException(name, reason, stackTraceString);
-            #else
-                Debug.LogError($"{name}: {reason}");
-            #endif
+#if !EXCLUDE_FABRIC
+            Crashlytics.RecordCustomException(name, reason, stackTraceString);
+#else
+            reason = reason != null ? $": {reason}" : "";
+            Debug.LogException(new StencilReportException($"{name}{reason}", stackTraceString));
+#endif
         }
 
         public static void Record(string message)
