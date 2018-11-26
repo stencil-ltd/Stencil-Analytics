@@ -1,4 +1,4 @@
-﻿#if !EXCLUDE_FABRIC && !NEW_CRASHLYTICS
+﻿#if STENCIL_FABRIC
 using System.Collections.Generic;
 using Fabric.Answers;
 using Fabric.Crashlytics;
