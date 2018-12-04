@@ -22,6 +22,7 @@ namespace Analytics
         public static readonly Tracking Instance = new Tracking(); 
 
         public bool Enabled => !Developers.Enabled;
+        public bool Silent;
 
         private readonly List<ITracker> _trackers = new List<ITracker>();
 
@@ -48,7 +49,7 @@ namespace Analytics
             eventData = Sanitize(eventData);
             
             var json = eventData == null ? "[]" : string.Join(", ", eventData.ToList());
-            Debug.Log($"Track Event: {name}\n{json}");
+            if (!Silent) Debug.Log($"Track Event: {name}\n{json}");
             if (Enabled)
                 foreach (var tracker in _trackers)
                     tracker.Track(name, eventData);
@@ -59,7 +60,7 @@ namespace Analytics
         {
             name = Sanitize(name);
             value = SanitizeObject(value);
-            Debug.Log($"User Property: {name} = {value}");
+            if (!Silent) Debug.Log($"User Property: {name} = {value}");
             if (Enabled)
                 foreach (var tracker in _trackers)
                     tracker.SetUserProperty(name, value);
