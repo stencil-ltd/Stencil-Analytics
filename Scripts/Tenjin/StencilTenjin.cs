@@ -1,3 +1,5 @@
+#if STENCIL_TENJIN
+
 using Binding;
 using Game.Screens.Gems;
 using Plugins.UI;
@@ -47,3 +49,5 @@ namespace Scripts.Tenjin
         }
     }
 }
+
+#endif
