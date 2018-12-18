@@ -43,6 +43,6 @@ namespace Scripts.Tenjin
             if (!baseEnabled || !iapEnabled) return;
             tenjin?.Transaction(productId,currencyCode,quantity,unitPrice,transactionId,receipt,signature);
         }
-    }
 #endif
+    }
 }

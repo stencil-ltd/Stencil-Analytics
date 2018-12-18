@@ -57,6 +57,6 @@ namespace Scripts.Tenjin
         {
             StencilTenjin.Instance.Transaction(ProductId, CurrencyCode, Quantity, UnitPrice, TransactionId, Receipt, null);
         }
-    }
 #endif
+    }
 }
