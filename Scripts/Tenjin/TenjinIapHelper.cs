@@ -1,15 +1,14 @@
-#if STENCIL_TENJIN
-
 using System.Collections.Generic;
 using Binding;
 using UnityEngine;
-using UnityEngine.Purchasing;
+using UnityEngine.Purchasing; 
 
 namespace Scripts.Tenjin
 {
     [RequireComponent(typeof(IAPListener))]
     public class TenjinIapHelper : MonoBehaviour
     {
+#if STENCIL_TENJIN
         [Bind]
         public IAPListener Listener { get; private set; }
         
@@ -59,6 +58,5 @@ namespace Scripts.Tenjin
             StencilTenjin.Instance.Transaction(ProductId, CurrencyCode, Quantity, UnitPrice, TransactionId, Receipt, null);
         }
     }
-}
-
 #endif
+}

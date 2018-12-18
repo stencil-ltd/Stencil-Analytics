@@ -1,18 +1,14 @@
-#if STENCIL_TENJIN
-
 using Binding;
-using Game.Screens.Gems;
 using Plugins.UI;
 using Scripts.RemoteConfig;
-using UI;
 using UnityEngine;
-using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin
 {
     [RequireComponent(typeof(TenjinIapHelper))]
     public class StencilTenjin : Permanent<StencilTenjin>
     {
+#if STENCIL_TENJIN
         public string apiKey;
         public BaseTenjin tenjin { get; private set; }
         
@@ -48,6 +44,5 @@ namespace Scripts.Tenjin
             tenjin?.Transaction(productId,currencyCode,quantity,unitPrice,transactionId,receipt,signature);
         }
     }
-}
-
 #endif
+}
