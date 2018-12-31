@@ -42,17 +42,27 @@ namespace Scripts.RemoteConfig
             return FirebaseRemoteConfig.GetValue("version").LongValue(long.MaxValue);
         }
 
+        private static bool _hasLogged;
+
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
             if (!GameInit.FirebaseReady)
             {
-                Debug.Log("Prod Check Skipped: Not ready.");
+                if (!_hasLogged)
+                {
+                    _hasLogged = true;
+                    Debug.Log("Prod Check Skipped: Not ready.");
+                }
                 return true;
             }
             if (HasBeenProd)
             {
-                Debug.Log("Prod Check: This is a prod device forever");
+                if (!_hasLogged)
+                {
+                    _hasLogged = true;
+                    Debug.Log("Prod Check: This is a prod device forever");
+                }
                 return true;
             }
             var localVersion = VersionCodes.GetVersionCode();
