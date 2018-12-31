@@ -49,6 +49,11 @@ namespace Scripts.RemoteConfig
                 }
             }
         }
+        #else
+        public static void BindRemoteConfig(this object obj)
+        {
+            Debug.LogError("Firebase is not linked. Not binding to remote config.");
+        }
         #endif
     }
 }

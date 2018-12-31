@@ -16,6 +16,7 @@ namespace Scripts.RemoteConfig
         public static event EventHandler OnRemoteConfig;
         public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
         
+        public static bool IsDeveloper() => !IsProd(); // because I'm an idiot who can't think
 #if EXCLUDE_FIREBASE
 
         public static bool IsProd() => true;
@@ -41,7 +42,6 @@ namespace Scripts.RemoteConfig
             return FirebaseRemoteConfig.GetValue("version").LongValue(long.MaxValue);
         }
 
-        public static bool IsDeveloper() => !IsProd(); // because I'm an idiot who can't think
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
