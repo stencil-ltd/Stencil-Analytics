@@ -28,6 +28,8 @@ namespace Analytics
                         return new Parameter(kv.Key, Convert.ToDouble(kv.Value));
                     if (value is long || value is int || value is byte || value is bool)
                         return new Parameter(kv.Key, Convert.ToInt64(kv.Value));
+                    if (value is ulong || value is uint)
+                        return new Parameter(kv.Key, Convert.ToUInt64(kv.Value));
                     if (value is string || value is char || value is Enum)
                         return new Parameter(kv.Key, $"{kv.Value}");
                     throw new Exception($"Unrecognized tracking type for {kv.Key}: {value.GetType()}");
