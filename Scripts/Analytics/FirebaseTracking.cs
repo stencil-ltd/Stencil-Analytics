@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using Firebase.Analytics;
 
 #if NEW_CRASHLYTICS
@@ -24,7 +25,7 @@ namespace Analytics
                 FirebaseAnalytics.LogEvent(name, eventData.Select(kv =>
                 {
                     var value = kv.Value;
-                    if (value is double || value is float)
+                    if (value is double || value is float || value is decimal)
                         return new Parameter(kv.Key, Convert.ToDouble(kv.Value));
                     if (value is long || value is int || value is byte || value is bool)
                         return new Parameter(kv.Key, Convert.ToInt64(kv.Value));
