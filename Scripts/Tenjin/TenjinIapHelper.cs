@@ -15,7 +15,6 @@ namespace Scripts.Tenjin
         private void Awake()
         {
             this.Bind();
-            Listener.dontDestroyOnLoad = false;
             Listener.onPurchaseComplete.AddListener(ProcessPurchase);
         }
 
