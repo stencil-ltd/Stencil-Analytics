@@ -1,3 +1,4 @@
+using Analytics;
 using Binding;
 using Plugins.UI;
 using Scripts.RemoteConfig;
@@ -40,7 +41,9 @@ namespace Scripts.Tenjin
         public void Transaction(string productId, string currencyCode, int quantity, double unitPrice, string transactionId,
             string receipt, string signature)
         {
+            Tracking.Instance.Track("tenjin_iap_attempt");
             if (!baseEnabled || !iapEnabled) return;
+            Tracking.Instance.Track("tenjin_iap_send");
             tenjin?.Transaction(productId,currencyCode,quantity,unitPrice,transactionId,receipt,signature);
         }
 #endif

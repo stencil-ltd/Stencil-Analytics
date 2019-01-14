@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Analytics;
 using Binding;
 using UnityEngine;
 using UnityEngine.Purchasing; 
@@ -37,11 +38,13 @@ namespace Scripts.Tenjin
 #if UNITY_EDITOR
             Debug.LogWarning("Logged transaction for Tenjin. Exiting because Editor");
 #elif UNITY_ANDROID
+            Tracking.Instance.Track("tenjin_iap_receive");
             var gpDetails = (Dictionary<string, object>)MiniJson.JsonDecode(payload);
             var gpJson    = (string)gpDetails["json"];
             var gpSig     = (string)gpDetails["signature"];
             CompletedAndroidPurchase(productId, currencyCode, 1, lPrice, gpJson, gpSig);
 #elif UNITY_IOS
+            Tracking.Instance.Track("tenjin_iap_receive");
             var transactionId = product.transactionID;
             CompletedIosPurchase(productId, currencyCode, 1, lPrice , transactionId, payload);
 #endif
