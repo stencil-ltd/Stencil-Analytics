@@ -11,7 +11,7 @@ using LocalNotification = UnityEngine.iOS.LocalNotification;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 #endif
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
 using Assets.SimpleAndroidNotifications;
 using Assets.SimpleAndroidNotifications.Data;
 using Assets.SimpleAndroidNotifications.Enums;
@@ -80,7 +80,7 @@ namespace Scripts.Notifications
             };
             NotificationServices.ScheduleLocalNotification(ln);
         }
-        #elif UNITY_ANDROID
+        #elif UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
         private void CancelAll()
         {
             NotificationManager.CancelAll();
@@ -102,6 +102,12 @@ namespace Scripts.Notifications
             };
             NotificationManager.SendCustom(notificationParams);
         }
+        #else
+        private void CancelAll()
+        {}
+        
+        private void Schedule(RetentionNotification note, DateTime date)
+        {}
         #endif
     }
 }
