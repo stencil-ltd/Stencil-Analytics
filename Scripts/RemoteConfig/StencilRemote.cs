@@ -71,7 +71,11 @@ namespace Scripts.RemoteConfig
                 return true;
 
             var version = prodVersion.Value.LongValue;
-            Debug.Log($"Prod Check: {localVersion} -> {version}");
+            if (!_hasLogged)
+            {
+                _hasLogged = true;
+                Debug.Log($"Prod Check: {localVersion} -> {version}");
+            }
             var retval = localVersion <= version;
             if (retval) HasBeenProd = true;
             return retval;
