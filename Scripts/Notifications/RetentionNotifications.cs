@@ -27,6 +27,9 @@ namespace Scripts.Notifications
         public float timeOfDay = 8;
         public RetentionNotification[] notifications;
 
+        [Header("Debug")] 
+        public bool debugMode;
+
         [RemoteField("enable_retention_notifications")]
         private bool _remoteEnabled;
 
@@ -36,29 +39,41 @@ namespace Scripts.Notifications
             set => StencilPrefs.Default.SetBool("retention_push_configured", value).Save();
         }
 
+        private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
+
         public void Init()
         {
             this.BindRemoteConfig();
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
             
-            if (!_remoteEnabled)
+            if (!Enabled)
             {
                 CancelAll();
                 return;
             }
             
-            if (Configured) return;
+            if (Configured && !debugMode) return;
             Configured = true;
             
             if (notifications.Length > 7)
                 throw new Exception("Must specify at most 7 notifications");
-                
+            
+            CancelAll();
+
+            var i = 0;
             var next = DateTime.Today.AddDays(1).AddHours(timeOfDay);
             foreach (var note in notifications)
             {
+                Debug.Log($"Schedule note {i++} for {next}");
                 Schedule(note, next);
                 next = next.AddDays(1);
+            }
+
+            if (debugMode)
+            {
+                Debug.Log($"Schedule debug note");
+                ScheduleDebug();
             }
         }
 
@@ -69,6 +84,19 @@ namespace Scripts.Notifications
             NotificationServices.CancelAllLocalNotifications();
         }
 
+        private void ScheduleDebug()
+        {
+            var note = notifications[0];
+            var ln = new LocalNotification
+            {
+                alertTitle = note.title, 
+                alertBody = note.message, 
+                fireDate = DateTime.Now.AddSeconds(30),
+                repeatInterval = CalendarUnit.Minute
+            };
+            NotificationServices.ScheduleLocalNotification(ln);
+        }
+        
         private void Schedule(RetentionNotification note, DateTime date)
         {
             var ln = new LocalNotification
@@ -84,7 +112,7 @@ namespace Scripts.Notifications
         private void CancelAll()
         {
             NotificationManager.CancelAll();
-        }
+        }      
 
         private void Schedule(RetentionNotification note, DateTime date)
         {
@@ -95,10 +123,29 @@ namespace Scripts.Notifications
                 Delay = delay,
                 Title = note.title,
                 Message = note.message,
-                LargeIcon = "app_icon",
+                SmallIcon = NotificationIcon.Wrench,
                 ExecuteMode = NotificationExecuteMode.Inexact,
+                Multiline = true,
                 Repeat = true,
                 RepeatInterval = TimeSpan.FromDays(7)
+            };
+            NotificationManager.SendCustom(notificationParams);
+        }
+        
+        private void ScheduleDebug()
+        {
+            var note = notifications[0];
+            var notificationParams = new NotificationParams
+            {
+                Id = NotificationIdHandler.GetNotificationId(),
+                Delay = TimeSpan.FromSeconds(30),
+                Title = note.title,
+                Message = note.message,
+                SmallIcon = NotificationIcon.Wrench,
+                Multiline = true,
+                ExecuteMode = NotificationExecuteMode.ExactAndAllowWhileIdle,
+                Repeat = true,
+                RepeatInterval = TimeSpan.FromMinutes(1)
             };
             NotificationManager.SendCustom(notificationParams);
         }
@@ -107,6 +154,9 @@ namespace Scripts.Notifications
         {}
         
         private void Schedule(RetentionNotification note, DateTime date)
+        {}
+        
+        private void ScheduleDebug()
         {}
         #endif
     }
