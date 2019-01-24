@@ -2,6 +2,7 @@ using System;
 using Binding;
 using Scripts.Prefs;
 using Scripts.RemoteConfig;
+using Scripts.Util;
 using UnityEngine;
 using Util;
 
@@ -24,11 +25,22 @@ namespace Scripts.Notifications
     [CreateAssetMenu(menuName = "Notifications/Retention Settings")]
     public class RetentionNotifications : Singleton<RetentionNotifications>
     {
+        [Header("Config")]
         public float timeOfDay = 8;
-        public RetentionNotification[] notifications;
 
+        [Header("Android")] 
+        public string category = "Daily Updates";
+        #if !EXCLUDE_SIMPLE_NOTIFICATIONS
+        public NotificationIcon icon = NotificationIcon.Wrench;
+        #endif
+        
         [Header("Debug")] 
         public bool debugMode;
+        
+        [Header("Content")]
+        [Tooltip("Start with Sunday, seven total")]
+        public RetentionNotification[] weekOfNotifications;
+
 
         [RemoteField("enable_retention_notifications")]
         private bool _remoteEnabled;
@@ -56,18 +68,19 @@ namespace Scripts.Notifications
             if (Configured && !debugMode) return;
             Configured = true;
             
-            if (notifications.Length > 7)
+            if (weekOfNotifications.Length > 7)
                 throw new Exception("Must specify at most 7 notifications");
             
             CancelAll();
 
             var i = 0;
-            var next = DateTime.Today.AddDays(1).AddHours(timeOfDay);
-            foreach (var note in notifications)
+            var day = DayOfWeek.Sunday;
+            foreach (var note in weekOfNotifications)
             {
+                var next = day.GetNext().AddHours(timeOfDay);
                 Debug.Log($"Schedule note {i++} for {next}");
-                Schedule(note, next);
-                next = next.AddDays(1);
+                Schedule(note, next); 
+                day++;
             }
 
             if (debugMode)
@@ -123,7 +136,9 @@ namespace Scripts.Notifications
                 Delay = delay,
                 Title = note.title,
                 Message = note.message,
-                SmallIcon = NotificationIcon.Wrench,
+                SmallIcon = icon,
+                LargeIcon = note.icon,
+                ChannelId = category,
                 ExecuteMode = NotificationExecuteMode.Inexact,
                 Multiline = true,
                 Repeat = true,
@@ -134,14 +149,16 @@ namespace Scripts.Notifications
         
         private void ScheduleDebug()
         {
-            var note = notifications[0];
+            var note = weekOfNotifications[0];
             var notificationParams = new NotificationParams
             {
                 Id = NotificationIdHandler.GetNotificationId(),
                 Delay = TimeSpan.FromSeconds(30),
                 Title = note.title,
                 Message = note.message,
-                SmallIcon = NotificationIcon.Wrench,
+                SmallIcon = icon,
+                LargeIcon = note.icon,
+                ChannelId = category,
                 Multiline = true,
                 ExecuteMode = NotificationExecuteMode.ExactAndAllowWhileIdle,
                 Repeat = true,
