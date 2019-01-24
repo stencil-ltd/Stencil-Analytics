@@ -57,18 +57,26 @@ namespace Scripts.Notifications
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
             
+            Debug.Log($"Check Retention Notifications");
             if (!Enabled)
             {
+            
+                Debug.Log($"Retention Notifications not enabled");
                 CancelAll();
                 return;
             }
-            
-            if (Configured && !debugMode) return;
+
+            if (Configured && !debugMode)
+            {
+                Debug.Log($"Retention Notifications already configured");
+                return;
+            }
             Configured = true;
             
             if (weekOfNotifications.Length > 7)
                 throw new Exception("Must specify at most 7 notifications");
             
+            Debug.Log($"Configuring Retention Notifications");
             CancelAll();
 
             var i = 0;
@@ -103,6 +111,7 @@ namespace Scripts.Notifications
                 alertTitle = note.title, 
                 alertBody = note.message, 
                 fireDate = DateTime.Now.AddSeconds(15),
+                applicationIconBadgeNumber = 1,
                 repeatInterval = CalendarUnit.Minute
             };
             NotificationServices.ScheduleLocalNotification(ln);
@@ -115,6 +124,7 @@ namespace Scripts.Notifications
                 alertTitle = note.title, 
                 alertBody = note.message, 
                 fireDate = date,
+                applicationIconBadgeNumber = 1,
                 repeatInterval = CalendarUnit.Week
             };
             NotificationServices.ScheduleLocalNotification(ln);
