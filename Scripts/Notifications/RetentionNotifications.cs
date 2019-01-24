@@ -17,7 +17,6 @@ using Assets.SimpleAndroidNotifications;
 using Assets.SimpleAndroidNotifications.Data;
 using Assets.SimpleAndroidNotifications.Enums;
 using Assets.SimpleAndroidNotifications.Helpers;
-using UnityEngine;
 #endif
 
 namespace Scripts.Notifications
@@ -29,7 +28,6 @@ namespace Scripts.Notifications
         public float timeOfDay = 8;
 
         [Header("Android")] 
-        public string category = "Daily Updates";
         #if !EXCLUDE_SIMPLE_NOTIFICATIONS
         public NotificationIcon icon = NotificationIcon.Wrench;
         #endif
@@ -138,7 +136,6 @@ namespace Scripts.Notifications
                 Message = note.message,
                 SmallIcon = icon,
                 LargeIcon = note.icon,
-                ChannelId = category,
                 ExecuteMode = NotificationExecuteMode.Inexact,
                 Multiline = true,
                 Repeat = true,
@@ -158,7 +155,6 @@ namespace Scripts.Notifications
                 Message = note.message,
                 SmallIcon = icon,
                 LargeIcon = note.icon,
-                ChannelId = category,
                 Multiline = true,
                 ExecuteMode = NotificationExecuteMode.ExactAndAllowWhileIdle,
                 Repeat = true,
