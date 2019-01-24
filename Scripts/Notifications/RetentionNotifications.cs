@@ -12,7 +12,7 @@ using LocalNotification = UnityEngine.iOS.LocalNotification;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
 #endif
 
-#if UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
+#if !EXCLUDE_SIMPLE_NOTIFICATIONS
 using Assets.SimpleAndroidNotifications;
 using Assets.SimpleAndroidNotifications.Data;
 using Assets.SimpleAndroidNotifications.Enums;
@@ -97,12 +97,12 @@ namespace Scripts.Notifications
 
         private void ScheduleDebug()
         {
-            var note = notifications[0];
+            var note = weekOfNotifications[0];
             var ln = new LocalNotification
             {
                 alertTitle = note.title, 
                 alertBody = note.message, 
-                fireDate = DateTime.Now.AddSeconds(30),
+                fireDate = DateTime.Now.AddSeconds(15),
                 repeatInterval = CalendarUnit.Minute
             };
             NotificationServices.ScheduleLocalNotification(ln);
