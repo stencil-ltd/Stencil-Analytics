@@ -5,7 +5,6 @@ using Scripts.RemoteConfig;
 using Scripts.Util;
 using UnityEngine;
 using Util;
-using LocalNotification = UnityEngine.iOS.LocalNotification;
 #if UNITY_IOS
 using CalendarUnit = UnityEngine.iOS.CalendarUnit;
 using LocalNotification = UnityEngine.iOS.LocalNotification;
