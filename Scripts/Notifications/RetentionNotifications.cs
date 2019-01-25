@@ -62,6 +62,7 @@ namespace Scripts.Notifications
             {
             
                 Debug.Log($"Retention Notifications not enabled");
+                Configured = false;
                 CancelAll();
                 return;
             }
@@ -96,16 +97,21 @@ namespace Scripts.Notifications
             }
         }
 
-        #if UNITY_IOS
-        public void CancelAll()
+        public void Clear()
         {
-            Configured = false;
+            #if UNITY_IOS
             var setCountNotif = new LocalNotification
             {
                 applicationIconBadgeNumber = -1, 
                 hasAction = false
             };
             NotificationServices.PresentLocalNotificationNow(setCountNotif);
+            #endif
+        }
+
+        #if UNITY_IOS
+        private void CancelAll()
+        {
             NotificationServices.CancelAllLocalNotifications();
         }
 
@@ -136,7 +142,7 @@ namespace Scripts.Notifications
             NotificationServices.ScheduleLocalNotification(ln);
         }
         #elif UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
-        public void CancelAll()
+        private void CancelAll()
         {
             NotificationManager.CancelAll();
         }      
@@ -179,7 +185,7 @@ namespace Scripts.Notifications
             NotificationManager.SendCustom(notificationParams);
         }
         #else
-        public void CancelAll()
+        private void CancelAll()
         {}
         
         private void Schedule(RetentionNotification note, DateTime date)
