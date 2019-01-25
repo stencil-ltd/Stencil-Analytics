@@ -43,6 +43,8 @@ namespace Scripts.RemoteConfig
         }
 
         private static bool _hasLogged;
+        
+        private static Dictionary<string, object> _force = new Dictionary<string, object>();
 
         public static bool IsProd()
         {
@@ -92,6 +94,12 @@ namespace Scripts.RemoteConfig
             return value;
         }
 
+        public static void ForceValue(string key, object value)
+        {
+            _force[key] = value;
+            OnRemoteConfig?.Invoke();
+        }
+
         private static string Process(this string key)
         {
             if (Developers.Enabled || !IsProd()) return $"{key}_debug";
@@ -100,41 +108,49 @@ namespace Scripts.RemoteConfig
         
         public static bool HasValue(string key)
         {
+            if (_force.ContainsKey(key)) return true;
             return GetValue(key.Process()).HasValue();
         }
         
         public static long LongValue(string key, long defaultValue = default(long))
         {
+            if (_force.TryGetValue(key, out var value)) return (long) value;
             return GetValue(key.Process()).LongValue(defaultValue);
         }
                  
         public static int IntValue(string key, int defaultValue = default(int))
         {
+            if (_force.TryGetValue(key, out var value)) return (int) value;
             return GetValue(key.Process()).IntValue(defaultValue);
         }
          
         public static string StringValue(string key, string defaultValue = default(string))
         {
+            if (_force.TryGetValue(key, out var value)) return (string) value;
             return GetValue(key.Process()).StringValue;
         }
                  
         public static double DoubleValue(string key, double defaultValue = default(double))
         {
+            if (_force.TryGetValue(key, out var value)) return (double) value;
             return GetValue(key.Process()).DoubleValue(defaultValue);
         }
                  
         public static float FloatValue(string key, float defaultValue = default(float))
         {
+            if (_force.TryGetValue(key, out var value)) return (float) value;
             return GetValue(key.Process()).FloatValue(defaultValue);
         }
                  
         public static bool BoolValue(string key, bool defaultValue = default(bool))
         {
+            if (_force.TryGetValue(key, out var value)) return (bool) value;
             return GetValue(key.Process()).BoolValue(defaultValue);
         }
                  
         public static IEnumerable<byte> ByteArrayValue(string key, IEnumerable<byte> defaultValue = null)
         {
+            if (_force.TryGetValue(key, out var value)) return (byte[]) value;
             return GetValue(key.Process()).ByteArrayValue(defaultValue);
         }
     #endif
