@@ -97,7 +97,7 @@ namespace Scripts.Notifications
         }
 
         #if UNITY_IOS
-        private void CancelAll()
+        public void CancelAll()
         {
             Configured = false;
             var setCountNotif = new LocalNotification
@@ -136,7 +136,7 @@ namespace Scripts.Notifications
             NotificationServices.ScheduleLocalNotification(ln);
         }
         #elif UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
-        private void CancelAll()
+        public void CancelAll()
         {
             NotificationManager.CancelAll();
         }      
@@ -179,7 +179,7 @@ namespace Scripts.Notifications
             NotificationManager.SendCustom(notificationParams);
         }
         #else
-        private void CancelAll()
+        public void CancelAll()
         {}
         
         private void Schedule(RetentionNotification note, DateTime date)
