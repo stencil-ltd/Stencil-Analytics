@@ -5,7 +5,7 @@ using Scripts.RemoteConfig;
 using Scripts.Util;
 using UnityEngine;
 using Util;
-
+using LocalNotification = UnityEngine.iOS.LocalNotification;
 #if UNITY_IOS
 using CalendarUnit = UnityEngine.iOS.CalendarUnit;
 using LocalNotification = UnityEngine.iOS.LocalNotification;
@@ -50,7 +50,7 @@ namespace Scripts.Notifications
         }
 
         private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
-
+        
         public void Init()
         {
             this.BindRemoteConfig();
@@ -100,6 +100,12 @@ namespace Scripts.Notifications
         private void CancelAll()
         {
             Configured = false;
+            var setCountNotif = new LocalNotification
+            {
+                applicationIconBadgeNumber = -1, 
+                hasAction = false
+            };
+            NotificationServices.PresentLocalNotificationNow(setCountNotif);
             NotificationServices.CancelAllLocalNotifications();
         }
 
