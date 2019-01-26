@@ -55,6 +55,7 @@ namespace Scripts.Notifications
             this.BindRemoteConfig();
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
+            Clear();
             
             Debug.Log($"Check Retention Notifications");
             if (!Enabled)
