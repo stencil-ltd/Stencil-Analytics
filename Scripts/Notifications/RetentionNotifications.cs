@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using Binding;
 using Scripts.Prefs;
 using Scripts.RemoteConfig;
@@ -23,6 +24,11 @@ namespace Scripts.Notifications
     [CreateAssetMenu(menuName = "Notifications/Retention Settings")]
     public class RetentionNotifications : Singleton<RetentionNotifications>
     {
+        #if UNITY_IOS
+        [DllImport ("__Internal")]
+        private static extern void _clearNotificationBadge();
+        #endif
+        
         [Header("Config")]
         public float timeOfDay = 8;
 
@@ -100,12 +106,7 @@ namespace Scripts.Notifications
         public void Clear()
         {
             #if UNITY_IOS
-            var setCountNotif = new LocalNotification
-            {
-                applicationIconBadgeNumber = -1, 
-                hasAction = false
-            };
-            NotificationServices.PresentLocalNotificationNow(setCountNotif);
+            _clearNotificationBadge();
             #endif
         }
 
