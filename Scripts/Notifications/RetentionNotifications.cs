@@ -105,7 +105,7 @@ namespace Scripts.Notifications
 
         public void Clear()
         {
-            #if UNITY_IOS
+            #if UNITY_IOS && !UNITY_EDITOR
             _clearNotificationBadge();
             #endif
         }
