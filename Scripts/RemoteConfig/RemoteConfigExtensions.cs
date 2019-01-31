@@ -43,6 +43,8 @@ namespace Util
                 return value.FloatArrayValue();
             if (type.TypeEquals<double[]>())
                 return value.DoubleArrayValue();
+            if (type.TypeEquals<string[]>())
+                return value.StringArrayValue();
             
             throw new Exception($"RemoteConfig got confused by {type}");
         }
@@ -102,12 +104,17 @@ namespace Util
             return value.HasValue() ? value.PrimitiveArrayValue<double>() : defaultValue;
         }
 
+        public static string[] StringArrayValue(this ConfigValue value, string[] defaultValue = null)
+        {
+            return value.HasValue() ? value.PrimitiveArrayValue<string>() : defaultValue;
+        }
+
         public static bool TypeEquals<T>(this Type t)
         {
             return t.IsEquivalentTo(typeof(T));
         }
         
-        private static T[] PrimitiveArrayValue<T>(this ConfigValue value) where T : struct
+        private static T[] PrimitiveArrayValue<T>(this ConfigValue value)
         {
             return JsonConvert.DeserializeObject<T[]>(value.StringValue);
         }
