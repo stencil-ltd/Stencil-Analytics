@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Init;
+using Newtonsoft.Json;
 using UnityEngine;
 using Util;
 using Versions;
@@ -153,6 +154,7 @@ namespace Scripts.RemoteConfig
             if (_force.TryGetValue(key, out var value)) return (byte[]) value;
             return GetValue(key.Process()).ByteArrayValue(defaultValue);
         }
+        
     #endif
     }
 }
