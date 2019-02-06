@@ -23,7 +23,7 @@ namespace Scripts.RemoteConfig
             foreach (var field in fields)
             {
                 var myAttr = field.GetCustomAttribute<RemoteField>();
-                var key = myAttr.Key;
+                var key = myAttr.GetKey(obj);
                 var config = StencilRemote.GetValue(key);
                 if (config.HasValue())
                 {
@@ -39,7 +39,7 @@ namespace Scripts.RemoteConfig
             foreach (var prop in props)
             {
                 var myAttr = prop.GetCustomAttribute<RemoteField>();
-                var key = myAttr.Key;
+                var key = myAttr.GetKey(obj);
                 var config = StencilRemote.GetValue(key);
                 if (config.HasValue())
                 {

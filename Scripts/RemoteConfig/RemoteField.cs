@@ -21,8 +21,7 @@ namespace Binding
         public string GetKey(object owner)
         {
             if (!ProcessId) return Key;
-            var proc = owner as IRemoteId;
-            return proc != null ? proc.ProcessRemoteId(Key) : Key;
+            return owner is IRemoteId proc ? proc.ProcessRemoteId(Key) : Key;
         }
     }
 }
