@@ -53,12 +53,13 @@ public static class LogCollector
     
     public static void Init(int capacity = 1024)
     {
+        if (capacity > Capacity)
+        {
+            Capacity = capacity;
+            _records = new LogRecord[capacity];
+        }
         if (IsInitialized) return;
-
         IsInitialized = true;
-        Capacity = capacity;
-        _records = new LogRecord[capacity];
-
         Application.logMessageReceivedThreaded += OnLog;
     }
 
