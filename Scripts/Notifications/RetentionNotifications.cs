@@ -6,35 +6,21 @@ using Scripts.RemoteConfig;
 using Scripts.Util;
 using UnityEngine;
 using Util;
-#if UNITY_IOS
-using System.Runtime.InteropServices;
-using CalendarUnit = UnityEngine.iOS.CalendarUnit;
-using LocalNotification = UnityEngine.iOS.LocalNotification;
-using NotificationServices = UnityEngine.iOS.NotificationServices;
-#endif
 
-#if !EXCLUDE_SIMPLE_NOTIFICATIONS
-using Assets.SimpleAndroidNotifications;
-using Assets.SimpleAndroidNotifications.Data;
+#if ANDROID_SIMPLE_NOTIFICATIONS
 using Assets.SimpleAndroidNotifications.Enums;
-using Assets.SimpleAndroidNotifications.Helpers;
 #endif
 
 namespace Scripts.Notifications
 {
     [CreateAssetMenu(menuName = "Notifications/Retention Settings")]
-    public class RetentionNotifications : Singleton<RetentionNotifications>
+    public class RetentionNotifications : Singleton<RetentionNotifications>, INotificationHost
     {
-        #if UNITY_IOS
-        [DllImport ("__Internal")]
-        private static extern void _clearNotificationBadge();
-        #endif
-        
         [Header("Config")]
         public float timeOfDay = 8;
 
         [Header("Android")] 
-        #if !EXCLUDE_SIMPLE_NOTIFICATIONS
+        #if ANDROID_SIMPLE_NOTIFICATIONS
         public NotificationIcon icon = NotificationIcon.Wrench;
         #endif
         
@@ -63,23 +49,16 @@ namespace Scripts.Notifications
             this.BindRemoteConfig();
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
-            if (_host == null)
-            {
-                #if UNITY_IOS
-                _host = new IosNotificationHost();
-                #elif UNITY_ANDROID
-                _host = new AndroidSimpleNotificationHost(icon);
-                #endif
-            }
+            _host = _host ?? ConfigureHost();
             
-            _host.ClearBadges();
+            ClearBadges();
             Debug.Log($"Check Retention Notifications");
             if (!Enabled)
             {
             
                 Debug.Log($"Retention Notifications not enabled");
                 Configured = false;
-                _host.CancelAll();
+                CancelAll();
                 return;
             }
 
@@ -94,7 +73,7 @@ namespace Scripts.Notifications
                 throw new Exception("Must specify at most 7 notifications");
             
             Debug.Log($"Configuring Retention Notifications");
-            _host.CancelAll();
+            CancelAll();
 
             var i = 0;
             var day = DayOfWeek.Sunday;
@@ -102,20 +81,49 @@ namespace Scripts.Notifications
             {
                 var next = day.GetNext().AddHours(timeOfDay);
                 Debug.Log($"Schedule note {i++} for {next}");
-                _host.Schedule(note, next); 
+                Schedule(note, next); 
                 day++;
             }
 
             if (debugMode)
             {
                 Debug.Log($"Schedule debug note");
-                _host.ScheduleDebug(weekOfNotifications[0]);
+                ScheduleDebug(weekOfNotifications[0]);
             }
+        }
+
+        private INotificationHost ConfigureHost()
+        {
+            #if UNITY_IOS
+               return new IosNotificationHost();
+            #elif UNITY_ANDROID 
+                #if ANDROID_UNITY_NOTIFICATIONS
+                    return new AndroidUnityNotificationHost();
+                #elif ANDROID_SIMPLE_NOTIFICATIONS
+                    return new AndroidSimpleNotificationHost(icon);
+                #endif
+            #endif
+            return null;
+        }
+
+        public void Schedule(RetentionNotification note, DateTime date)
+        {
+            _host?.Schedule(note, date);
+        }
+
+        public void ScheduleDebug(RetentionNotification note)
+        {
+            _host?.ScheduleDebug(note);
+        }
+
+        public void CancelAll()
+        {
+            _host?.CancelAll();
         }
 
         public void ClearBadges()
         {
-            _host.ClearBadges();
+            _host?.ClearBadges();
         }
     }
 }

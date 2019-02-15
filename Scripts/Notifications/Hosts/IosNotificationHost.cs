@@ -1,11 +1,15 @@
-//#if UNITY_IOS
+#if UNITY_IOS
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine.iOS;
 
 namespace Scripts.Notifications.Hosts
 {
     public class IosNotificationHost : INotificationHost
     {
+        [DllImport ("__Internal")]
+        private static extern void _clearNotificationBadge();
+        
         public void Schedule(RetentionNotification note, DateTime date)
         {
             var ln = new LocalNotification
@@ -45,4 +49,4 @@ namespace Scripts.Notifications.Hosts
         }
     }
 }
-//#endif
+#endif
