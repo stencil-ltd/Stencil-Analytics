@@ -1,12 +1,13 @@
 using System;
-using System.Runtime.InteropServices;
 using Binding;
+using Scripts.Notifications.Hosts;
 using Scripts.Prefs;
 using Scripts.RemoteConfig;
 using Scripts.Util;
 using UnityEngine;
 using Util;
 #if UNITY_IOS
+using System.Runtime.InteropServices;
 using CalendarUnit = UnityEngine.iOS.CalendarUnit;
 using LocalNotification = UnityEngine.iOS.LocalNotification;
 using NotificationServices = UnityEngine.iOS.NotificationServices;
@@ -44,9 +45,10 @@ namespace Scripts.Notifications
         [Tooltip("Start with Sunday, seven total")]
         public RetentionNotification[] weekOfNotifications;
 
-
         [RemoteField("enable_retention_notifications")]
         private bool _remoteEnabled;
+
+        private INotificationHost _host;
 
         private bool Configured
         {
@@ -61,15 +63,23 @@ namespace Scripts.Notifications
             this.BindRemoteConfig();
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
-            Clear();
+            if (_host == null)
+            {
+                #if UNITY_IOS
+                _host = new IosNotificationHost();
+                #elif UNITY_ANDROID
+                _host = new AndroidSimpleNotificationHost(icon);
+                #endif
+            }
             
+            _host.ClearBadges();
             Debug.Log($"Check Retention Notifications");
             if (!Enabled)
             {
             
                 Debug.Log($"Retention Notifications not enabled");
                 Configured = false;
-                CancelAll();
+                _host.CancelAll();
                 return;
             }
 
@@ -84,7 +94,7 @@ namespace Scripts.Notifications
                 throw new Exception("Must specify at most 7 notifications");
             
             Debug.Log($"Configuring Retention Notifications");
-            CancelAll();
+            _host.CancelAll();
 
             var i = 0;
             var day = DayOfWeek.Sunday;
@@ -92,108 +102,20 @@ namespace Scripts.Notifications
             {
                 var next = day.GetNext().AddHours(timeOfDay);
                 Debug.Log($"Schedule note {i++} for {next}");
-                Schedule(note, next); 
+                _host.Schedule(note, next); 
                 day++;
             }
 
             if (debugMode)
             {
                 Debug.Log($"Schedule debug note");
-                ScheduleDebug();
+                _host.ScheduleDebug(weekOfNotifications[0]);
             }
         }
 
-        public void Clear()
+        public void ClearBadges()
         {
-            #if UNITY_IOS && !UNITY_EDITOR
-            _clearNotificationBadge();
-            #endif
+            _host.ClearBadges();
         }
-
-        #if UNITY_IOS
-        private void CancelAll()
-        {
-            NotificationServices.CancelAllLocalNotifications();
-        }
-
-        private void ScheduleDebug()
-        {
-            var note = weekOfNotifications[0];
-            var ln = new LocalNotification
-            {
-                alertTitle = note.title, 
-                alertBody = note.message, 
-                fireDate = DateTime.Now.AddSeconds(15),
-                applicationIconBadgeNumber = 1,
-                repeatInterval = CalendarUnit.Minute
-            };
-            NotificationServices.ScheduleLocalNotification(ln);
-        }
-        
-        private void Schedule(RetentionNotification note, DateTime date)
-        {
-            var ln = new LocalNotification
-            {
-                alertTitle = note.title, 
-                alertBody = note.message, 
-                fireDate = date,
-                applicationIconBadgeNumber = 1,
-                repeatInterval = CalendarUnit.Week
-            };
-            NotificationServices.ScheduleLocalNotification(ln);
-        }
-        #elif UNITY_ANDROID && !EXCLUDE_SIMPLE_NOTIFICATIONS
-        private void CancelAll()
-        {
-            NotificationManager.CancelAll();
-        }      
-
-        private void Schedule(RetentionNotification note, DateTime date)
-        {
-            var delay = date - DateTime.Now;
-            var notificationParams = new NotificationParams
-            {
-                Id = NotificationIdHandler.GetNotificationId(),
-                Delay = delay,
-                Title = note.title,
-                Message = note.message,
-                SmallIcon = icon,
-                LargeIcon = note.icon,
-                ExecuteMode = NotificationExecuteMode.Inexact,
-                Multiline = true,
-                Repeat = true,
-                RepeatInterval = TimeSpan.FromDays(7)
-            };
-            NotificationManager.SendCustom(notificationParams);
-        }
-        
-        private void ScheduleDebug()
-        {
-            var note = weekOfNotifications[0];
-            var notificationParams = new NotificationParams
-            {
-                Id = NotificationIdHandler.GetNotificationId(),
-                Delay = TimeSpan.FromSeconds(30),
-                Title = note.title,
-                Message = note.message,
-                SmallIcon = icon,
-                LargeIcon = note.icon,
-                Multiline = true,
-                ExecuteMode = NotificationExecuteMode.ExactAndAllowWhileIdle,
-                Repeat = true,
-                RepeatInterval = TimeSpan.FromMinutes(1)
-            };
-            NotificationManager.SendCustom(notificationParams);
-        }
-        #else
-        private void CancelAll()
-        {}
-        
-        private void Schedule(RetentionNotification note, DateTime date)
-        {}
-        
-        private void ScheduleDebug()
-        {}
-        #endif
     }
 }
