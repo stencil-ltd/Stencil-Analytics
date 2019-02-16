@@ -21,7 +21,7 @@ namespace Scripts.Notifications.Hosts
             AndroidNotificationCenter.RegisterNotificationChannel(_channel);
         }
 
-        public void Schedule(RetentionNotification note, DateTime date)
+        public void Schedule(DayOfWeek day, RetentionNotification note, DateTime date)
         {
             var n = new AndroidNotification
             {

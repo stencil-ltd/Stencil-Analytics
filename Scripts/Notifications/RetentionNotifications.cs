@@ -38,8 +38,8 @@ namespace Scripts.Notifications
 
         private bool Configured
         {
-            get => StencilPrefs.Default.GetBool("retention_push_configured");
-            set => StencilPrefs.Default.SetBool("retention_push_configured", value).Save();
+            get => StencilPrefs.Default.GetBool("retention_push_configured_v2");
+            set => StencilPrefs.Default.SetBool("retention_push_configured_v2", value).Save();
         }
 
         private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
@@ -81,7 +81,7 @@ namespace Scripts.Notifications
             {
                 var next = day.GetNext().AddHours(timeOfDay);
                 Debug.Log($"Schedule note {i++} for {next}");
-                Schedule(note, next); 
+                Schedule(day, note, next); 
                 day++;
             }
 
@@ -106,9 +106,9 @@ namespace Scripts.Notifications
             return null;
         }
 
-        public void Schedule(RetentionNotification note, DateTime date)
+        public void Schedule(DayOfWeek day, RetentionNotification note, DateTime date)
         {
-            _host?.Schedule(note, date);
+            _host?.Schedule(day, note, date);
         }
 
         public void ScheduleDebug(RetentionNotification note)

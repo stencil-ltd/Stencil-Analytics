@@ -10,9 +10,9 @@ namespace Scripts.Notifications.Hosts
         [DllImport ("__Internal")]
         private static extern void _clearNotificationBadge();
         
-        public void Schedule(RetentionNotification note, DateTime date)
+        public void Schedule(DayOfWeek day, RetentionNotification note, DateTime date)
         {
-            var ln = new LocalNotification
+            var ln = new UnityEngine.iOS.LocalNotification
             {
                 alertTitle = note.title, 
                 alertBody = note.message, 
@@ -25,7 +25,7 @@ namespace Scripts.Notifications.Hosts
 
         public void ScheduleDebug(RetentionNotification note)
         {
-            var ln = new LocalNotification
+            var ln = new UnityEngine.iOS.LocalNotification
             {
                 alertTitle = note.title, 
                 alertBody = note.message, 
