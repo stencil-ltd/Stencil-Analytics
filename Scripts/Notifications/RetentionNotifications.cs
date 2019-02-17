@@ -43,9 +43,13 @@ namespace Scripts.Notifications
         }
 
         private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
+        private bool _init;
         
         public void Init()
         {
+            if (_init) return;
+            _init = true;
+            
             this.BindRemoteConfig();
             _remoteEnabled |= StencilRemote.IsDeveloper();
             StencilRemote.OnRemoteConfig += (sender, args) => Init();
@@ -80,14 +84,15 @@ namespace Scripts.Notifications
             foreach (var note in weekOfNotifications)
             {
                 var next = day.GetNext().AddHours(timeOfDay);
-                Debug.Log($"Schedule note {i++} for {next}");
+                Debug.Log($"Retention: Schedule note {i++} for {next}");
                 Schedule(day, note, next); 
                 day++;
             }
 
+            Debug.Log("Retention: Check debug mode");
             if (debugMode)
             {
-                Debug.Log($"Schedule debug note");
+                Debug.Log($"Retention: Schedule debug note");
                 ScheduleDebug(weekOfNotifications[0]);
             }
         }

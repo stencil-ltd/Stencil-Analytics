@@ -55,7 +55,6 @@ namespace Scripts.Notifications.Hosts
             p.SmallIcon = icon;
             p.LargeIcon = note.icon;
             p.Vibrate = false;
-            p.Vibration = new int[]{};
             p.Multiline = true;
             p.Repeat = true;
         }
