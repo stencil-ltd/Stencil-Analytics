@@ -1,4 +1,4 @@
-#if UNITY_ANDROID && ANDROID_SIMPLE_NOTIFICATIONS
+#if UNITY_ANDROID && SIMPLE_NOTIFICATIONS
 
 using System;
 using Assets.SimpleAndroidNotifications;

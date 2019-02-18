@@ -7,7 +7,7 @@ using Scripts.Util;
 using UnityEngine;
 using Util;
 
-#if ANDROID_SIMPLE_NOTIFICATIONS
+#if SIMPLE_NOTIFICATIONS
 using Assets.SimpleAndroidNotifications.Enums;
 #endif
 
@@ -20,7 +20,7 @@ namespace Scripts.Notifications
         public float timeOfDay = 8;
 
         [Header("Android")] 
-        #if ANDROID_SIMPLE_NOTIFICATIONS
+        #if SIMPLE_NOTIFICATIONS
         public NotificationIcon icon = NotificationIcon.Wrench;
         #endif
         
@@ -104,7 +104,7 @@ namespace Scripts.Notifications
             #elif UNITY_ANDROID 
                 #if ANDROID_UNITY_NOTIFICATIONS
                     return new AndroidUnityNotificationHost();
-                #elif ANDROID_SIMPLE_NOTIFICATIONS
+                #elif SIMPLE_NOTIFICATIONS
                     return new AndroidSimpleNotificationHost(icon);
                 #endif
             #endif
