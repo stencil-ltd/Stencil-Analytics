@@ -32,7 +32,7 @@ namespace Scripts.Notifications
         public RetentionNotification[] weekOfNotifications;
 
         [RemoteField("enable_retention_notifications")]
-        private bool _remoteEnabled;
+        private bool _remoteEnabled = true;
 
         private INotificationHost _host;
 
@@ -43,10 +43,13 @@ namespace Scripts.Notifications
         }
 
         private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
+        
+        [NonSerialized]
         private bool _init;
         
         public void Init()
         {
+            if (!Application.isPlaying) return;
             if (_init) return;
             _init = true;
             
@@ -59,14 +62,13 @@ namespace Scripts.Notifications
             Debug.Log($"Check Retention Notifications");
             if (!Enabled)
             {
-            
                 Debug.Log($"Retention Notifications not enabled");
                 Configured = false;
                 CancelAll();
                 return;
             }
 
-            if (Configured && !debugMode)
+            if (!Application.isEditor && Configured && !debugMode)
             {
                 Debug.Log($"Retention Notifications already configured");
                 return;
@@ -101,14 +103,13 @@ namespace Scripts.Notifications
         {
             #if UNITY_IOS
                return new IosNotificationHost();
-            #elif UNITY_ANDROID 
-                #if ANDROID_UNITY_NOTIFICATIONS
-                    return new AndroidUnityNotificationHost();
-                #elif SIMPLE_NOTIFICATIONS
-                    return new AndroidSimpleNotificationHost(icon);
-                #endif
+            #elif UNITY_ANDROID && ANDROID_UNITY_NOTIFICATIONS
+                return new AndroidUnityNotificationHost();
+            #elif UNITY_ANDROID && SIMPLE_NOTIFICATIONS
+                return new AndroidSimpleNotificationHost(icon);
+            #else
+                return null;
             #endif
-            return null;
         }
 
         public void Schedule(DayOfWeek day, RetentionNotification note, DateTime date)
@@ -123,11 +124,13 @@ namespace Scripts.Notifications
 
         public void CancelAll()
         {
+            Debug.Log("Retention: Cancel All");
             _host?.CancelAll();
         }
 
         public void ClearBadges()
         {
+            Debug.Log("Retention: Clear Badges");
             _host?.ClearBadges();
         }
     }
