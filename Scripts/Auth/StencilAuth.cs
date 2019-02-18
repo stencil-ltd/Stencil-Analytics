@@ -20,7 +20,7 @@ namespace Scripts.Auth
             => Auth?.CurrentUser;
 
         public static event EventHandler IdTokenChanged;
-
+        
         static StencilAuth()
         {
             if (GameInit.FirebaseReady)
@@ -38,12 +38,14 @@ namespace Scripts.Auth
             if (!GameInit.FirebaseReady) return;
             IsReady = true;
             FirebaseAuth.DefaultInstance.IdTokenChanged += IdTokenChanged;
+            IdTokenChanged?.Invoke(null, EventArgs.Empty);
         }
 
         public static Task<FirebaseUser> SignInAnonymouslyAsync()
         {
-            if (!GameInit.FirebaseReady) return Task.FromException<FirebaseUser>(new Exception("Not Ready"));
-            return FirebaseAuth.DefaultInstance.SignInAnonymouslyAsync();
+            if (GameInit.FirebaseReady)
+                return FirebaseAuth.DefaultInstance.SignInAnonymouslyAsync();
+            return Task.FromException<FirebaseUser>(new Exception("Firebase not ready"));
         }
     }
 }
