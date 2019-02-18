@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Schema;
+using Firebase;
 using Firebase.Analytics;
+using Init;
 
 #if NEW_CRASHLYTICS
 using Facebook.MiniJSON;
@@ -16,6 +18,7 @@ namespace Analytics
     {
         public ITracker Track(string name, Dictionary<string, object> eventData)
         {
+            if (!GameInit.FirebaseReady) return this;
             if (eventData == null)
             {
                 FirebaseAnalytics.LogEvent(name);
@@ -45,6 +48,7 @@ namespace Analytics
 
         public ITracker SetUserProperty(string name, object value)
         {
+            if (!GameInit.FirebaseReady) return this;
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
             #if NEW_CRASHLYTICS
             Crashlytics.Log($"Set Property {name} = {value}");
