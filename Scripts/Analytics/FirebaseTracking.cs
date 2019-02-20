@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Schema;
+using Dirichlet.Numerics;
 using Firebase;
 using Firebase.Analytics;
 using Init;
+using UnityEngine;
 
 #if NEW_CRASHLYTICS
 using Facebook.MiniJSON;
@@ -27,16 +29,24 @@ namespace Analytics
             {
                 FirebaseAnalytics.LogEvent(name, eventData.Select(kv =>
                 {
-                    var value = kv.Value;
-                    if (value is double || value is float || value is decimal)
-                        return new Parameter(kv.Key, Convert.ToDouble(kv.Value));
-                    if (value is long || value is int || value is byte || value is bool)
-                        return new Parameter(kv.Key, Convert.ToInt64(kv.Value));
-                    if (value is ulong || value is uint)
-                        return new Parameter(kv.Key, Convert.ToUInt64(kv.Value));
-                    if (value is string || value is char || value is Enum)
-                        return new Parameter(kv.Key, $"{kv.Value}");
-                    throw new Exception($"Unrecognized tracking type for {kv.Key}: {value.GetType()}");
+                    try
+                    {
+                        var value = kv.Value;
+                        if (value is double || value is float || value is decimal)
+                            return new Parameter(kv.Key, Convert.ToDouble(kv.Value));
+                        if (value is long || value is int || value is byte || value is bool)
+                            return new Parameter(kv.Key, Convert.ToInt64(kv.Value));
+                        if (value is ulong || value is uint || value is UInt128)
+                            return new Parameter(kv.Key, Convert.ToUInt64(kv.Value));
+                        if (value is string || value is char || value is Enum)
+                            return new Parameter(kv.Key, $"{kv.Value}");
+                        throw new Exception($"Unrecognized tracking type for {kv.Key}: {value.GetType()}");
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        return new Parameter(kv.Key, kv.Value.ToString());
+                    }
                 }).ToArray());
             }
 
