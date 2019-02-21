@@ -133,5 +133,11 @@ namespace Scripts.Notifications
             Debug.Log("Retention: Clear Badges");
             _host?.ClearBadges();
         }
+
+        public void Diagnostic()
+        {
+            Debug.Log("Retention: Running diagnostic");
+            _host?.Diagnostic();
+        }
     }
 }

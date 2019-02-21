@@ -1,7 +1,9 @@
 #if UNITY_IOS
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine.iOS;
+using UnityEngine;
+using CalendarUnit = UnityEngine.iOS.CalendarUnit;
+using NotificationServices = UnityEngine.iOS.NotificationServices;
 
 namespace Scripts.Notifications.Hosts
 {
@@ -46,6 +48,13 @@ namespace Scripts.Notifications.Hosts
         public void CancelAll()
         {
             NotificationServices.CancelAllLocalNotifications();
+        }
+
+        public void Diagnostic()
+        {
+            var scheduled = NotificationServices.scheduledLocalNotifications;
+            foreach (var note in scheduled)
+                Debug.Log($"Retention Scheduled: [{note.fireDate}, {note.repeatInterval}] - {note.alertTitle} ({note.alertBody})");
         }
     }
 }

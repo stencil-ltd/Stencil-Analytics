@@ -8,5 +8,6 @@ namespace Scripts.Notifications
         void ScheduleDebug(RetentionNotification note);
         void ClearBadges();
         void CancelAll();
+        void Diagnostic();
     }
 }

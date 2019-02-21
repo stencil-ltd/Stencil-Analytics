@@ -61,6 +61,11 @@ namespace Scripts.Notifications.Hosts
         {
             AndroidNotificationCenter.CancelAllNotifications();
         }
+
+        public void Diagnostic()
+        {
+            
+        }
     }
 }
 

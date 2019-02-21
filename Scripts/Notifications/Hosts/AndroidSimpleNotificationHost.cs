@@ -71,6 +71,11 @@ namespace Scripts.Notifications.Hosts
             for (var i = 0; i < 7; i++) 
                 NotificationManager.Cancel(GetId(i));
         }
+
+        public void Diagnostic()
+        {
+            
+        }
     }
 }
 
