@@ -53,8 +53,14 @@ namespace Scripts.Notifications.Hosts
         public void Diagnostic()
         {
             var scheduled = NotificationServices.scheduledLocalNotifications;
+            Debug.Log($"Retention: Found {scheduled.Length} scheduled notifications");
             foreach (var note in scheduled)
                 Debug.Log($"Retention Scheduled: [{note.fireDate}, {note.repeatInterval}] - {note.alertTitle} ({note.alertBody})");
+        }
+
+        public bool ConfirmScheduled()
+        {
+            return NotificationServices.scheduledLocalNotifications.Length > 1;
         }
     }
 }

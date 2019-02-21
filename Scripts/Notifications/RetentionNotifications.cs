@@ -71,7 +71,12 @@ namespace Scripts.Notifications
             if (!Application.isEditor && Configured && !debugMode)
             {
                 Debug.Log($"Retention Notifications already configured");
-                return;
+                if (ConfirmScheduled())
+                {
+                    Diagnostic();
+                    return;
+                }
+                Debug.Log($"Retention Notifications NOT confirmed. Re-running");
             }
             Configured = true;
             
@@ -97,6 +102,8 @@ namespace Scripts.Notifications
                 Debug.Log($"Retention: Schedule debug note");
                 ScheduleDebug(weekOfNotifications[0]);
             }
+            
+            Diagnostic();
         }
 
         private INotificationHost ConfigureHost()
@@ -138,6 +145,11 @@ namespace Scripts.Notifications
         {
             Debug.Log("Retention: Running diagnostic");
             _host?.Diagnostic();
+        }
+
+        public bool ConfirmScheduled()
+        {
+            return _host?.ConfirmScheduled() ?? true;
         }
     }
 }

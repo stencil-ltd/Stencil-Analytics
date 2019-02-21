@@ -76,6 +76,11 @@ namespace Scripts.Notifications.Hosts
         {
             
         }
+
+        public bool ConfirmScheduled()
+        {
+            return true;
+        }
     }
 }
 

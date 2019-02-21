@@ -9,5 +9,6 @@ namespace Scripts.Notifications
         void ClearBadges();
         void CancelAll();
         void Diagnostic();
+        bool ConfirmScheduled();
     }
 }
