@@ -143,6 +143,9 @@ namespace Scripts.Notifications
 
         public void Diagnostic()
         {
+            #if UNITY_EDITOR
+            return;
+            #endif
             Debug.Log("Retention: Running diagnostic");
             _host?.Diagnostic();
         }
