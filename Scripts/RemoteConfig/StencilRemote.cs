@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Firebase;
 using Init;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -86,13 +87,24 @@ namespace Scripts.RemoteConfig
 
         public static ConfigValue GetValue(string key, bool forceProd = false)
         {
-            var orig = key;
-            if (!forceProd) key = key.Process();
-            if (!GameInit.FirebaseReady) return new ConfigValue();
-            var value = FirebaseRemoteConfig.GetValue(key);
-            if (!value.HasValue() && !IsProd())
-                value = FirebaseRemoteConfig.GetValue(orig);
-            return value;
+            try
+            {
+                var orig = key;
+                if (!forceProd) key = key.Process();
+//              if (!GameInit.FirebaseReady) return new ConfigValue();
+                var value = FirebaseRemoteConfig.GetValue(key);
+                if (!value.HasValue() && !IsProd())
+                    value = FirebaseRemoteConfig.GetValue(orig);
+                return value;
+            }
+            catch (InitializationException e)
+            {
+                return new ConfigValue();
+            }
+            catch (InvalidOperationException e)
+            {
+                return new ConfigValue();
+            }
         }
 
         public static void ForceValue(string key, object value)
