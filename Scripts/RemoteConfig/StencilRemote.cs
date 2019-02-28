@@ -34,14 +34,14 @@ namespace Scripts.RemoteConfig
         
         public static ConfigValue? GetProdVersionValue()
         {
-            if (!GameInit.FirebaseReady) return null;
-            return FirebaseRemoteConfig.GetValue("version");
+//            if (!GameInit.FirebaseReady) return null;
+            return GetValueInternal("version");
         }
         
         public static long GetProdVersion()
         {
-            if (!GameInit.FirebaseReady) return long.MaxValue;
-            return FirebaseRemoteConfig.GetValue("version").LongValue(long.MaxValue);
+//            if (!GameInit.FirebaseReady) return long.MaxValue;
+            return GetValueInternal("version").LongValue(long.MaxValue);
         }
 
         private static bool _hasLogged;
@@ -85,6 +85,22 @@ namespace Scripts.RemoteConfig
             return retval;
         }
 
+        public static ConfigValue GetValueInternal(string key)
+        {
+            try
+            {
+                return FirebaseRemoteConfig.GetValue(key);
+            }
+            catch (InitializationException e)
+            {
+                return new ConfigValue();
+            }
+            catch (InvalidOperationException e)
+            {
+                return new ConfigValue();
+            }
+        }
+
         public static ConfigValue GetValue(string key, bool forceProd = false)
         {
             try
@@ -92,9 +108,9 @@ namespace Scripts.RemoteConfig
                 var orig = key;
                 if (!forceProd) key = key.Process();
 //              if (!GameInit.FirebaseReady) return new ConfigValue();
-                var value = FirebaseRemoteConfig.GetValue(key);
+                var value = GetValueInternal(key);
                 if (!value.HasValue() && !IsProd())
-                    value = FirebaseRemoteConfig.GetValue(orig);
+                    value = GetValueInternal(orig);
                 return value;
             }
             catch (InitializationException e)
