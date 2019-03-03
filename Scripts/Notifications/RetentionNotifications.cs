@@ -1,6 +1,5 @@
 using System;
 using Binding;
-using Scripts.Notifications.Hosts;
 using Scripts.Prefs;
 using Scripts.RemoteConfig;
 using Scripts.Util;
@@ -9,6 +8,10 @@ using Util;
 
 #if SIMPLE_NOTIFICATIONS
 using Assets.SimpleAndroidNotifications.Enums;
+#endif
+
+#if UNITY_ANDROID || UNITY_IOS
+using Scripts.Notifications.Hosts;
 #endif
 
 namespace Scripts.Notifications
