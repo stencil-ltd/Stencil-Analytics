@@ -41,8 +41,8 @@ namespace Scripts.Notifications
 
         private bool Configured
         {
-            get => StencilPrefs.Default.GetBool("retention_push_configured_v2");
-            set => StencilPrefs.Default.SetBool("retention_push_configured_v2", value).Save();
+            get => StencilPrefs.Default.GetBool("retention_push_configured_v3");
+            set => StencilPrefs.Default.SetBool("retention_push_configured_v3", value).Save();
         }
 
         private bool Enabled => debugMode || _remoteEnabled || StencilRemote.IsDeveloper();
