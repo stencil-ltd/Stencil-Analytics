@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Binding;
-using Dev;
-using Newtonsoft.Json;
 using UnityEngine;
 
 #if !EXCLUDE_FIREBASE
 using Firebase.RemoteConfig;
+#endif
+
+#if !EXCLUDE_JSON_NET
+using Newtonsoft.Json;
 #endif
 
 namespace Util
@@ -116,7 +115,12 @@ namespace Util
         
         private static T[] PrimitiveArrayValue<T>(this ConfigValue value)
         {
+#if EXCLUDE_JSON_NET
+            Debug.LogError("Json.net disabled. Not parsing conversion.");
+            return null;
+#else
             return JsonConvert.DeserializeObject<T[]>(value.StringValue);
+#endif
         }
 
 #endif

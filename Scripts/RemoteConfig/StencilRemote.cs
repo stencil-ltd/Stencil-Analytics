@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Firebase;
 using Init;
-using Newtonsoft.Json;
 using UnityEngine;
 using Util;
 using Versions;
