@@ -4,12 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Dev;
+using Firebase.Crashlytics;
 using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
-
-#if STENCIL_FABRIC
-using Fabric.Crashlytics;
-#endif
 
 #if NEW_CRASHLYTICS
 using Firebase.Crashlytics;
@@ -33,12 +30,8 @@ namespace Analytics
             #if !EXCLUDE_FIREBASE
             _trackers.Add(new FirebaseTracking());
             #endif
-            
-            #if STENCIL_FABRIC
-            _trackers.Add(new FabricTracking());
-            #endif
-            
-            #if !EXCLUDE_FACEBOOK
+
+#if !EXCLUDE_FACEBOOK
             _trackers.Add(new FacebookTracking());
             #endif
         }
@@ -69,12 +62,8 @@ namespace Analytics
 
         public static void Report(string name, string reason = null, string stackTraceString = null)
         {
-#if STENCIL_FABRIC
-            Crashlytics.RecordCustomException(name, reason, stackTraceString);
-#else
             reason = reason != null ? $": {reason}" : "";
             Debug.LogException(new StencilReportException($"{name}{reason}", stackTraceString));
-#endif
         }
 
         public static void Record(string message)
@@ -86,9 +75,6 @@ namespace Analytics
         {
             var stacktrace = new StackTrace(1, true);
             Debug.LogWarning($"Warning: {message} - {stacktrace}");
-            #if STENCIL_FABRIC
-            Crashlytics.RecordCustomException("Warning", message, stacktrace);
-            #endif
         }
 
         public static void WarnIfNull(object thing, 
