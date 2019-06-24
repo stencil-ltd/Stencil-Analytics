@@ -8,16 +8,17 @@ namespace Scripts.Tenjin
 {
     public partial class StencilTenjin : Permanent<StencilTenjin>
     {
-#if STENCIL_TENJIN
-        
         public string apiKey;
-        public BaseTenjin tenjin { get; private set; }
         
         [RemoteField("tenjin_base")] 
         public bool baseEnabled = true;
 
         [RemoteField("tenjin_iap")]
         public bool iapEnabled = true;
+        
+#if STENCIL_TENJIN
+
+        public BaseTenjin tenjin { get; private set; }
 
         protected override void Awake()
         {

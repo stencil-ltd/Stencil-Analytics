@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Dev;
-using Firebase.Crashlytics;
 using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
 
@@ -31,7 +30,7 @@ namespace Analytics
             _trackers.Add(new FirebaseTracking());
             #endif
 
-#if !EXCLUDE_FACEBOOK
+            #if !EXCLUDE_FACEBOOK
             _trackers.Add(new FacebookTracking());
             #endif
         }

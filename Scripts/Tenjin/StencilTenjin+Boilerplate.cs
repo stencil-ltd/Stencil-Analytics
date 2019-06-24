@@ -36,12 +36,16 @@ namespace Scripts.Tenjin
 
         private void CompletedAndroidPurchase(string ProductId, string CurrencyCode, int Quantity, double UnitPrice, string Receipt, string Signature)
         {
+#if STENCIL_TENJIN
             tenjin.Transaction(ProductId, CurrencyCode, Quantity, UnitPrice, null, Receipt, Signature);
+#endif
         }
 
         private void CompletedIosPurchase(string ProductId, string CurrencyCode, int Quantity, double UnitPrice, string TransactionId, string Receipt)
         {
+#if STENCIL_TENJIN
             tenjin.Transaction(ProductId, CurrencyCode, Quantity, UnitPrice, TransactionId, Receipt, null);
+#endif
         }
     }
 }
