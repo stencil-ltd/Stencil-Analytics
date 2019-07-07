@@ -4,6 +4,8 @@ using UnityEngine;
 
 #if !EXCLUDE_FIREBASE
 using Firebase.RemoteConfig;
+using UI;
+
 #endif
 
 #if !EXCLUDE_JSON_NET
@@ -34,6 +36,10 @@ namespace Util
                 return Convert.ToSingle(value.DoubleValue);
             if (type.TypeEquals<bool>())
                 return value.BooleanValue;
+            if (type.TypeEquals<Color>())
+                return value.ColorValue(Color.white);
+            if (type.TypeEquals<Color[]>())
+                return value.ColorArrayValue();
             if (type.TypeEquals<int[]>())
                 return value.IntArrayValue();
             if (type.TypeEquals<long[]>())
@@ -81,6 +87,21 @@ namespace Util
         public static int IntValue(this ConfigValue value, int defaultValue)
         {
             return value.HasValue() ? (int) value.LongValue : defaultValue;
+        }
+
+        public static Color ColorValue(this ConfigValue value, Color defaultValue)
+        {
+            return value.HasValue() ? value.StringValue.ToColor() : defaultValue;
+        }
+
+        public static Color[] ColorArrayValue(this ConfigValue value, Color[] defaultValue = null)
+        {
+            if (!value.HasValue()) return defaultValue;
+            var strings = value.StringArrayValue();
+            var retval = new List<Color>(strings.Length);
+            foreach (var s in strings) 
+                retval.Add(s.ToColor());
+            return retval.ToArray();
         }
 
         public static int[] IntArrayValue(this ConfigValue value, int[] defaultValue = null)
