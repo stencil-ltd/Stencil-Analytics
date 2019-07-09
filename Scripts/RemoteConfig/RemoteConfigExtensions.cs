@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-#if !EXCLUDE_FIREBASE
+#if STENCIL_FIREBASE
 using Firebase.RemoteConfig;
 using UI;
 
 #endif
 
-#if !EXCLUDE_JSON_NET
+#if STENCIL_JSON_NET
 using Newtonsoft.Json;
 #endif
 
@@ -16,7 +16,7 @@ namespace Util
 {
     public static class RemoteConfigExtensions
     {  
-#if !EXCLUDE_FIREBASE
+#if STENCIL_FIREBASE
         public static bool HasValue(this ConfigValue value)
         {
             return value.Source != ValueSource.StaticValue;
@@ -136,7 +136,7 @@ namespace Util
         
         private static T[] PrimitiveArrayValue<T>(this ConfigValue value)
         {
-#if EXCLUDE_JSON_NET
+#if !STENCIL_JSON_NET
             Debug.LogError("Json.net disabled. Not parsing conversion.");
             return null;
 #else

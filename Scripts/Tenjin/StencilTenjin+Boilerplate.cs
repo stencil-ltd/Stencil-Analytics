@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Stencil.Util;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -13,7 +14,7 @@ namespace Scripts.Tenjin
             double lPrice = decimal.ToDouble(price);
             var currencyCode = product.metadata.isoCurrencyCode;
 
-            var wrapper = (Dictionary<string, object>)MiniJson.JsonDecode(product.receipt);
+            var wrapper = (Dictionary<string, object>) Json.Deserialize(product.receipt);
             if (null == wrapper) {
                 return;
             }
@@ -24,7 +25,7 @@ namespace Scripts.Tenjin
 #if UNITY_EDITOR
             Debug.Log("Tenjin doesn't work in editor");
 #elif UNITY_ANDROID
-            var gpDetails = (Dictionary<string, object>)MiniJson.JsonDecode(payload);
+            var gpDetails = (Dictionary<string, object>)Json.Deserialize(payload);
             var gpJson = (string)gpDetails["json"];
             var gpSig = (string)gpDetails["signature"];
             CompletedAndroidPurchase(productId, currencyCode, 1, lPrice, gpJson, gpSig);

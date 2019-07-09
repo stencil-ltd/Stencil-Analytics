@@ -10,7 +10,7 @@ namespace Scripts.RemoteConfig
 {
     public static class RemoteBinding
     {
-        #if !EXCLUDE_FIREBASE
+        #if STENCIL_FIREBASE
         public static void BindRemoteConfig(this object obj)
         {
             if (RemoteField.SkipForDevelopers && Developers.Enabled) return;

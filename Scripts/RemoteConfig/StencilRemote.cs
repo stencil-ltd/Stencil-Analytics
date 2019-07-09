@@ -6,7 +6,7 @@ using UnityEngine;
 using Util;
 using Versions;
 using Developers = Dev.Developers;
-#if !EXCLUDE_FIREBASE
+#if STENCIL_FIREBASE
 using Firebase.RemoteConfig;
 #endif
 
@@ -18,7 +18,7 @@ namespace Scripts.RemoteConfig
         public static void NotifyRemoteConfig() => OnRemoteConfig?.Invoke();
         
         public static bool IsDeveloper() => !IsProd(); // because I'm an idiot who can't think
-#if EXCLUDE_FIREBASE
+#if !STENCIL_FIREBASE
 
         public static bool IsProd() => true;
         

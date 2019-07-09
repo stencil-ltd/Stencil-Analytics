@@ -26,11 +26,11 @@ namespace Analytics
         {
             _trackers.Add(new UnityTracking());
             
-            #if !EXCLUDE_FIREBASE
+            #if STENCIL_FIREBASE
             _trackers.Add(new FirebaseTracking());
             #endif
 
-            #if !EXCLUDE_FACEBOOK
+            #if STENCIL_FACEBOOK
             _trackers.Add(new FacebookTracking());
             #endif
         }
