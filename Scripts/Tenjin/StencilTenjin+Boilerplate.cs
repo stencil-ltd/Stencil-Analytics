@@ -33,8 +33,11 @@ namespace Scripts.Tenjin
 
 #if UNITY_EDITOR
                 Debug.Log("Tenjin doesn't work in editor");
-#elif UNITY_ANDROID
-                var gpDetails = (Dictionary<string, object>)MiniJson.JsonEncode(payload);
+                return;
+#endif
+                
+#if UNITY_ANDROID
+                var gpDetails = (Dictionary<string, object>)MiniJson.JsonDecode(payload);
                 CheckNotNull(gpDetails, "gpDetails");
                 var gpJson = (string)gpDetails["json"];
                 CheckNotNull(gpJson, "gpJson");
