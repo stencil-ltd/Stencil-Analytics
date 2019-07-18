@@ -7,7 +7,7 @@ using Dev;
 using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
 
-#if NEW_CRASHLYTICS
+#if STENCIL_FIREBASE
 using Firebase.Crashlytics;
 #endif
 
@@ -57,6 +57,19 @@ namespace Analytics
                 foreach (var tracker in _trackers)
                     tracker.SetUserProperty(name, value);
             return this;
+        }
+
+        public static void LogException(string reason)
+        {
+            LogException(new Exception(reason));
+        }
+
+        public static void LogException(Exception e)
+        {
+            Debug.LogException(e);
+            #if STENCIL_FIREBASE
+            Crashlytics.LogException(e);
+#endif
         }
 
         public static void Report(string name, string reason = null, string stackTraceString = null)

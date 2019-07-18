@@ -1,18 +1,13 @@
 ﻿#if STENCIL_FIREBASE
+using Firebase.Crashlytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 using Dirichlet.Numerics;
-using Firebase;
 using Firebase.Analytics;
 using Init;
+using Stencil.Util;
 using UnityEngine;
-
-#if NEW_CRASHLYTICS
-using Facebook.MiniJSON;
-using Firebase.Crashlytics;
-#endif
 
 namespace Analytics
 {
@@ -52,7 +47,7 @@ namespace Analytics
                 }).ToArray());
             }
 
-            #if NEW_CRASHLYTICS
+            #if STENCIL_FIREBASE
             Crashlytics.Log($"{name}: {Json.Serialize(eventData)}");
             #endif
             return this;
@@ -62,9 +57,9 @@ namespace Analytics
         {
             if (!GameInit.FirebaseReady) return this;
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
-            #if NEW_CRASHLYTICS
+            #if STENCIL_FIREBASE
             Crashlytics.Log($"Set Property {name} = {value}");
-            Crashlytics.SetKeyValue(name, value?.ToString());
+            Crashlytics.SetCustomKey(name, value?.ToString());
             #endif
             return this;
         }
