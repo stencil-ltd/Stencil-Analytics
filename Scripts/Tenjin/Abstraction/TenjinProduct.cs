@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Analytics;
 using Scripts.RemoteConfig;
+using Scripts.Tenjin.Subscriptions;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -14,17 +15,17 @@ namespace Scripts.Tenjin.Abstraction
             #if !STENCIL_TENJIN
             return new DummyTenjinProduct(product);
             #elif UNITY_EDITOR
-            return new TenjinProduct(StencilTenjin.Instance.tenjin, product);
+            return new TenjinProduct(StencilTenjin.Instance, product);
             #elif UNITY_IOS
-            return new TenjinProductIos(StencilTenjin.Instance.tenjin, product);
+            return new TenjinProductIos(StencilTenjin.Instance, product);
             #elif UNITY_ANDROID
-            return new TenjinProductAndroid(StencilTenjin.Instance.tenjin, product);
+            return new TenjinProductAndroid(StencilTenjin.Instance, product);
             #else
             throw new Exception("Can't create TenjinProduct. Unknown Platform.");
             #endif
         }
 
-        public readonly BaseTenjin tenjin;
+        public readonly StencilTenjin tenjin;
         public Product product { get; }
 
         protected Dictionary<string, object> wrapper;
@@ -37,8 +38,11 @@ namespace Scripts.Tenjin.Abstraction
         protected string transactionId;
         protected string receipt;
         protected string signature;
+        
+        // Subscription Only.
+        protected SubscriptionState subscription;
 
-        protected TenjinProduct(BaseTenjin tenjin, Product product)
+        protected TenjinProduct(StencilTenjin tenjin, Product product)
         {
             this.product = product;
             this.tenjin = tenjin;
@@ -53,17 +57,41 @@ namespace Scripts.Tenjin.Abstraction
             payload = (string) wrapper["Payload"];
             productId = product.definition.id;
             CheckNotNull(productId, "Product ID");
+            if (product.definition.type == ProductType.Subscription)
+                subscription = new SubscriptionState(product);
         }
 
-        public void TrackPurchase()
+        public void CheckSubscription()
         {
             try
             {
-                var iapEnabled = StencilTenjin.Instance.iapEnabled;
-                var baseEnabled = StencilTenjin.Instance.baseEnabled;
-                if (StencilRemote.IsProd() && (!iapEnabled || !baseEnabled)) return;
+                if (!IsEnabled()) return;
+                if (subscription == null) return;
                 Refresh();
-                OnTrackPurchase();
+
+                var info = subscription.info;
+                var now = DateTime.UtcNow;
+                if (info.isSubscribed() != Result.True || info.isExpired() == Result.True)
+                {
+                    Debug.LogWarning("Not subscribed.");
+                    return;
+                }
+                subscription.FirstPurchaseDate = subscription.FirstPurchaseDate ?? now;
+                
+                if (info.isFreeTrial() == Result.True)
+                {
+                    Debug.Log("Free Trial");
+                    return;
+                }
+                subscription.FirstChargeDate = subscription.FirstChargeDate ?? now;
+
+                var last = subscription.LastCharge;
+                if (last == null)
+                {
+                    OnTrackPurchase();
+                    subscription.LastCharge = now.Date;
+                    return;
+                }
             }
             catch (Exception e)
             {
@@ -71,11 +99,40 @@ namespace Scripts.Tenjin.Abstraction
             }
         }
 
+        public void TrackPurchase()
+        {
+            try
+            {
+                if (!IsEnabled()) return;
+                if (product.definition.type == ProductType.Subscription)
+                {
+                    // submethod will call refresh.
+                    CheckSubscription();
+                }
+                else
+                {
+                    Refresh();
+                    OnTrackPurchase();
+                }
+            }
+            catch (Exception e)
+            {
+                Tracking.LogException(e);
+            }
+        }
+
+        protected bool IsEnabled()
+        {
+            var iapEnabled = StencilTenjin.Instance.iapEnabled;
+            var baseEnabled = StencilTenjin.Instance.baseEnabled;
+            return !StencilRemote.IsProd() || iapEnabled && baseEnabled;
+        }
+
         protected virtual void OnTrackPurchase()
         {
             Debug.Log($"Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
-            #if !UNITY_EDITOR
-            tenjin.Transaction(productId, currencyCode, 1, price, transactionId, receipt, signature);
+            #if STENCIL_TENJIN && !UNITY_EDITOR
+            tenjin.tenjin.Transaction(productId, currencyCode, 1, price, transactionId, receipt, signature);
             #endif
         }
         

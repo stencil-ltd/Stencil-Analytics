@@ -7,7 +7,7 @@ namespace Scripts.Tenjin.Abstraction
 {
     public class TenjinProductAndroid : TenjinProduct
     {
-        public TenjinProductAndroid(BaseTenjin tenjin, Product product) : base(tenjin, product)
+        public TenjinProductAndroid(StencilTenjin tenjin, Product product) : base(tenjin, product)
         {}
 
         protected override void Refresh()

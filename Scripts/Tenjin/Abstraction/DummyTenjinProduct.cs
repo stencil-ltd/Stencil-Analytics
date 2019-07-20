@@ -15,5 +15,10 @@ namespace Scripts.Tenjin.Abstraction
         {
             
         }
+
+        public void CheckSubscription()
+        {
+            
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace Scripts.Tenjin.Abstraction
     {
         Product product { get; }
         void TrackPurchase();
+        void CheckSubscription();
     }
 }
