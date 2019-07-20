@@ -92,6 +92,14 @@ namespace Scripts.Tenjin.Abstraction
                     subscription.LastCharge = now.Date;
                     return;
                 }
+
+                var next = last.Value.AddDays(subscription.repeatDays);
+                while (next < now)
+                {
+                    OnTrackPurchase();
+                    subscription.LastCharge = next;
+                    next = last.Value.AddDays(subscription.repeatDays);   
+                }
             }
             catch (Exception e)
             {

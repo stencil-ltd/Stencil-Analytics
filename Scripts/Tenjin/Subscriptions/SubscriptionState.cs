@@ -10,6 +10,9 @@ namespace Scripts.Tenjin.Subscriptions
         public readonly Product product;
         public readonly SubscriptionInfo info;
 
+        public int freeDays = 3;
+        public int repeatDays = 7;
+
         public DateTime? FirstPurchaseDate
         {
             get => StencilPrefs.Default.GetDateTime($"stencil_sub_first_purchase_{id}");
@@ -28,10 +31,11 @@ namespace Scripts.Tenjin.Subscriptions
             set => StencilPrefs.Default.SetDateTime($"stencil_sub_last_charge_{id}", value).Save();
         }
 
-        public SubscriptionState(Product product)
+        public SubscriptionState(Product product, int freeDays = 3)
         {
             this.product = product;
             id = product.definition.id;
+            this.freeDays = freeDays;
             info = new SubscriptionManager(product, null).getSubscriptionInfo();
         }
     }
