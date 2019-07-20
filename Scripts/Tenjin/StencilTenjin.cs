@@ -13,7 +13,7 @@ namespace Scripts.Tenjin
         [RemoteField("tenjin_base")] 
         public bool baseEnabled = true;
 
-        [RemoteField("tenjin_iap")]
+        [RemoteField("tenjin_iap_v2")]
         public bool iapEnabled = true;
         
 #if STENCIL_TENJIN
