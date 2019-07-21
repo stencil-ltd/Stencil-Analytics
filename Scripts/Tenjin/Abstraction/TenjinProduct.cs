@@ -50,6 +50,7 @@ namespace Scripts.Tenjin.Abstraction
 
         protected virtual void Refresh()
         {
+            Debug.Log($"TenjinProduct: Refresh {productId}");
             wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(product.receipt);
             price = decimal.ToDouble(product.metadata.localizedPrice);
             currencyCode = product.metadata.isoCurrencyCode;
@@ -67,20 +68,22 @@ namespace Scripts.Tenjin.Abstraction
             {
                 if (!IsEnabled()) return;
                 if (subscription == null) return;
+                
+                Debug.Log($"TenjinProduct: Check Subscription {productId}");
                 Refresh();
 
                 var info = subscription.info;
                 var now = DateTime.UtcNow;
                 if (info.isSubscribed() != Result.True || info.isExpired() == Result.True)
                 {
-                    Debug.LogWarning("Not subscribed.");
+                    Debug.LogWarning($"TenjinProduct: Not subscribed {productId}");
                     return;
                 }
                 subscription.FirstPurchaseDate = subscription.FirstPurchaseDate ?? now;
                 
                 if (info.isFreeTrial() == Result.True)
                 {
-                    Debug.Log("Free Trial");
+                    Debug.Log($"TenjinProduct: Free Trial {productId}");
                     return;
                 }
                 subscription.FirstChargeDate = subscription.FirstChargeDate ?? now;
@@ -88,17 +91,25 @@ namespace Scripts.Tenjin.Abstraction
                 var last = subscription.LastCharge;
                 if (last == null)
                 {
+                    Debug.Log($"TenjinProduct: First Charge: {productId}");
                     OnTrackPurchase();
                     subscription.LastCharge = now.Date;
                     return;
                 }
 
                 var next = last.Value.AddDays(subscription.repeatDays);
+                var count = 0;
                 while (next < now)
                 {
-                    OnTrackPurchase();
-                    subscription.LastCharge = next;
+                    Debug.Log($"TenjinProduct: One valid charge {productId}");
+                    count++;
                     next = last.Value.AddDays(subscription.repeatDays);   
+                }
+                if (count > 0)
+                {
+                    Debug.Log($"TenjinProduct: Charge x{count} {productId}");
+                    OnTrackPurchase(count);
+                    subscription.LastCharge = next;
                 }
             }
             catch (Exception e)
@@ -112,13 +123,16 @@ namespace Scripts.Tenjin.Abstraction
             try
             {
                 if (!IsEnabled()) return;
+                Debug.Log($"TenjinProduct: TrackPurchase {productId}");
                 if (product.definition.type == ProductType.Subscription)
                 {
                     // submethod will call refresh.
+                    Debug.Log($"TenjinProduct: TrackPurchase -> CheckSubscription {productId}");
                     CheckSubscription();
                 }
                 else
                 {
+                    Debug.Log($"TenjinProduct: Valid Consumable Purchase {productId}");
                     Refresh();
                     OnTrackPurchase();
                 }
@@ -131,16 +145,19 @@ namespace Scripts.Tenjin.Abstraction
 
         protected bool IsEnabled()
         {
+            var prod = StencilRemote.IsProd();
             var iapEnabled = StencilTenjin.Instance.iapEnabled;
             var baseEnabled = StencilTenjin.Instance.baseEnabled;
-            return !StencilRemote.IsProd() || iapEnabled && baseEnabled;
+            var retval = !prod || iapEnabled && baseEnabled;
+            Debug.Log($"TenjinProduct: Enabled = {retval} (!{prod} and {baseEnabled} and {iapEnabled}): {productId}");
+            return retval;
         }
 
-        protected virtual void OnTrackPurchase()
+        protected virtual void OnTrackPurchase(int count = 1)
         {
             Debug.Log($"Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
             #if STENCIL_TENJIN && !UNITY_EDITOR
-            tenjin.tenjin.Transaction(productId, currencyCode, 1, price, transactionId, receipt, signature);
+            tenjin.tenjin.Transaction(productId, currencyCode, count, price, transactionId, receipt, signature);
             #endif
         }
         
