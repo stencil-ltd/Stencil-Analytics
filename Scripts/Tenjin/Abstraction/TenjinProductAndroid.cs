@@ -13,6 +13,7 @@ namespace Scripts.Tenjin.Abstraction
         protected override void Refresh()
         {
             base.Refresh();
+            if (payload == null) return;
             var gpDetails = (Dictionary<string, object>)MiniJson.JsonDecode(payload);
             CheckNotNull(gpDetails, "gpDetails");
             receipt = (string)gpDetails["json"];

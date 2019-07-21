@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Analytics;
+using JetBrains.Annotations;
 using Scripts.RemoteConfig;
 using Scripts.Tenjin.Subscriptions;
 using UnityEngine;
@@ -28,19 +29,20 @@ namespace Scripts.Tenjin.Abstraction
         public readonly StencilTenjin tenjin;
         public Product product { get; }
 
-        protected Dictionary<string, object> wrapper;
         protected double price;
         protected string currencyCode;
-        protected string payload;
         protected string productId;
 
+        [CanBeNull] protected Dictionary<string, object> wrapper;
+        [CanBeNull] protected string payload;
+
         // Platform-dependent values.
-        protected string transactionId;
-        protected string receipt;
-        protected string signature;
+        [CanBeNull] protected string transactionId;
+        [CanBeNull] protected string receipt;
+        [CanBeNull] protected string signature;
         
         // Subscription Only.
-        protected SubscriptionState subscription;
+        [CanBeNull] protected SubscriptionState subscription;
 
         protected TenjinProduct(StencilTenjin tenjin, Product product)
         {
@@ -51,13 +53,21 @@ namespace Scripts.Tenjin.Abstraction
         protected virtual void Refresh()
         {
             Debug.Log($"TenjinProduct: Refresh {productId}");
-            wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(product.receipt);
+            productId = product.definition.id;
+            CheckNotNull(productId, "Product ID");
             price = decimal.ToDouble(product.metadata.localizedPrice);
             currencyCode = product.metadata.isoCurrencyCode;
             CheckNotNull(currencyCode, "Currency Code");
+            if (product.receipt == null)
+            {
+                Debug.Log($"TenjinProduct: No Receipt {productId}");
+                wrapper = null;
+                payload = null;
+                subscription = null;
+                return;
+            }
+            wrapper = (Dictionary<string, object>) MiniJson.JsonDecode(product.receipt);
             payload = (string) wrapper["Payload"];
-            productId = product.definition.id;
-            CheckNotNull(productId, "Product ID");
             if (product.definition.type == ProductType.Subscription)
                 subscription = new SubscriptionState(product);
         }
@@ -67,10 +77,12 @@ namespace Scripts.Tenjin.Abstraction
             try
             {
                 if (!IsEnabled()) return;
-                if (subscription == null) return;
                 
                 Debug.Log($"TenjinProduct: Check Subscription {productId}");
                 Refresh();
+                
+                if (subscription == null)
+                    return;
 
                 var info = subscription.info;
                 var now = DateTime.UtcNow;
@@ -97,13 +109,13 @@ namespace Scripts.Tenjin.Abstraction
                     return;
                 }
 
-                var next = last.Value.AddDays(subscription.repeatDays);
+                var next = last.Value + subscription.repeatInterval;
                 var count = 0;
                 while (next < now)
                 {
                     Debug.Log($"TenjinProduct: One valid charge {productId}");
                     count++;
-                    next = last.Value.AddDays(subscription.repeatDays);   
+                    next += subscription.repeatInterval;
                 }
                 if (count > 0)
                 {
@@ -155,7 +167,7 @@ namespace Scripts.Tenjin.Abstraction
 
         protected virtual void OnTrackPurchase(int count = 1)
         {
-            Debug.Log($"Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
+            Debug.Log($"TenjinProduct: Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
             #if STENCIL_TENJIN && !UNITY_EDITOR
             tenjin.tenjin.Transaction(productId, currencyCode, count, price, transactionId, receipt, signature);
             #endif

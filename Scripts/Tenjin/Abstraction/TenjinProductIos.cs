@@ -14,8 +14,7 @@ namespace Scripts.Tenjin.Abstraction
             base.Refresh();
             transactionId = product.transactionID;
             receipt = payload;
-            signature = null;
-            CheckNotNull(transactionId, "transactionId");   
+            signature = null; 
         }
     }
 }

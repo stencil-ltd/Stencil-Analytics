@@ -1,5 +1,7 @@
 using System;
 using Scripts.Prefs;
+using Scripts.RemoteConfig;
+using UnityEngine;
 using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin.Subscriptions
@@ -10,8 +12,10 @@ namespace Scripts.Tenjin.Subscriptions
         public readonly Product product;
         public readonly SubscriptionInfo info;
 
-        public int freeDays = 3;
-        public int repeatDays = 7;
+        public readonly TimeSpan freeInterval;
+        public readonly TimeSpan repeatInterval;
+
+        public readonly bool prod;
 
         public DateTime? FirstPurchaseDate
         {
@@ -31,12 +35,15 @@ namespace Scripts.Tenjin.Subscriptions
             set => StencilPrefs.Default.SetDateTime($"stencil_sub_last_charge_{id}", value).Save();
         }
 
-        public SubscriptionState(Product product, int freeDays = 3)
+        public SubscriptionState(Product product)
         {
             this.product = product;
+            prod = StencilRemote.IsProd();
             id = product.definition.id;
-            this.freeDays = freeDays;
             info = new SubscriptionManager(product, null).getSubscriptionInfo();
+            freeInterval = prod ? info.getFreeTrialPeriod() : TimeSpan.FromMinutes(3);
+            repeatInterval = prod ? info.getSubscriptionPeriod() : TimeSpan.FromMinutes(5);
+            Debug.Log($"TenjinProduct: {id} {freeInterval.TotalDays} -> {repeatInterval.TotalDays}");
         }
     }
 }
