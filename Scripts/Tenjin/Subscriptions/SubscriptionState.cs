@@ -45,5 +45,12 @@ namespace Scripts.Tenjin.Subscriptions
             repeatInterval = prod ? info.getSubscriptionPeriod() : TimeSpan.FromMinutes(5);
             Debug.Log($"TenjinProduct: {id} {freeInterval.TotalDays} -> {repeatInterval.TotalDays}");
         }
+
+        public void Clear()
+        {
+            FirstPurchaseDate = null;
+            FirstChargeDate = null;
+            LastCharge = null;
+        }
     }
 }

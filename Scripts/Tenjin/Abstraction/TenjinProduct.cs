@@ -89,6 +89,7 @@ namespace Scripts.Tenjin.Abstraction
                 if (info.isSubscribed() != Result.True || info.isExpired() == Result.True)
                 {
                     Debug.LogWarning($"TenjinProduct: Not subscribed {productId}");
+                    subscription.Clear();
                     return;
                 }
                 subscription.FirstPurchaseDate = subscription.FirstPurchaseDate ?? now;
