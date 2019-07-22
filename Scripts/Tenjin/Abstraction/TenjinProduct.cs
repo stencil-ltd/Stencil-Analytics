@@ -169,9 +169,11 @@ namespace Scripts.Tenjin.Abstraction
         protected virtual void OnTrackPurchase(int count = 1)
         {
             Debug.Log($"TenjinProduct: Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
-            #if STENCIL_TENJIN && !UNITY_EDITOR
-            tenjin.tenjin.Transaction(productId, currencyCode, count, price, transactionId, receipt, signature);
+            if (!StencilRemote.IsProd()) return;
+            #if !STENCIL_TENJIN || UNITY_EDITOR
+            return;
             #endif
+            tenjin.tenjin.Transaction(productId, currencyCode, count, price, transactionId, receipt, signature);
         }
         
         protected void CheckNotNull(object field, string name)
