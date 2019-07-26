@@ -16,6 +16,7 @@ namespace Scripts.Tenjin.Subscriptions
         public readonly TimeSpan repeatInterval;
 
         public readonly bool prod;
+        public readonly bool shorten;
 
         public DateTime? FirstPurchaseDate
         {
@@ -39,10 +40,14 @@ namespace Scripts.Tenjin.Subscriptions
         {
             this.product = product;
             prod = StencilRemote.IsProd();
+            shorten = !prod;
+            #if !UNITY_ANDROID
+            shorten = false;
+            #endif
             id = product.definition.id;
             info = new SubscriptionManager(product, null).getSubscriptionInfo();
-            freeInterval = prod ? info.getFreeTrialPeriod() : TimeSpan.FromMinutes(3);
-            repeatInterval = prod ? info.getSubscriptionPeriod() : TimeSpan.FromMinutes(5);
+            freeInterval = !shorten ? info.getFreeTrialPeriod() : TimeSpan.FromMinutes(3);
+            repeatInterval = !shorten ? info.getSubscriptionPeriod() : TimeSpan.FromMinutes(5);
             Debug.Log($"TenjinProduct: {id} {freeInterval.TotalDays} -> {repeatInterval.TotalDays}");
         }
 
