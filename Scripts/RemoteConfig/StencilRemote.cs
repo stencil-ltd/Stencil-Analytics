@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Firebase;
 using Init;
 using UnityEngine;
 using Util;
 using Versions;
 using Developers = Dev.Developers;
+
 #if STENCIL_FIREBASE
+using Firebase;
 using Firebase.RemoteConfig;
 #endif
 
