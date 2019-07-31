@@ -20,7 +20,6 @@ namespace Scripts.RemoteConfig
         
         public static bool IsDeveloper() => !IsProd(); // because I'm an idiot who can't think
 #if !STENCIL_FIREBASE
-
         public static bool IsProd() => true;
         
 #else

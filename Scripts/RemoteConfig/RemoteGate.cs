@@ -33,7 +33,7 @@ namespace RemoteConfig
         public override bool? Check()
         {
             if (enableInDebug && StencilRemote.IsDeveloper()) return true;
-#if EXCLUDE_FIREBASE
+#if !STENCIL_FIREBASE
                 return null;
 #else
             var retval = StencilRemote.BoolValue(key, defaultFieldValue);

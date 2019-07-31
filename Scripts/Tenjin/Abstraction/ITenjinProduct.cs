@@ -1,3 +1,4 @@
+#if UNITY_PURCHASING
 using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin.Abstraction
@@ -9,3 +10,5 @@ namespace Scripts.Tenjin.Abstraction
         void CheckSubscription();
     }
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_PURCHASING
 using System;
 using Scripts.Prefs;
 using Scripts.RemoteConfig;
@@ -59,3 +60,4 @@ namespace Scripts.Tenjin.Subscriptions
         }
     }
 }
+#endif

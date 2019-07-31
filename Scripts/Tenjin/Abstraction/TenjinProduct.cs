@@ -1,3 +1,4 @@
+#if UNITY_PURCHASING
 using System;
 using System.Collections.Generic;
 using Analytics;
@@ -182,3 +183,4 @@ namespace Scripts.Tenjin.Abstraction
         }
     }
 }
+#endif

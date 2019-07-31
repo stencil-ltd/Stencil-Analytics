@@ -2,11 +2,12 @@ using System;
 using Binding;
 using Plugins.UI;
 using Scripts.RemoteConfig;
+using UI;
 using UnityEngine;
 
 namespace Scripts.Tenjin
 {
-    public partial class StencilTenjin : Permanent<StencilTenjin>
+    public partial class StencilTenjin : PermanentV2<StencilTenjin>
     {
         public string apiKey;
         
@@ -20,9 +21,9 @@ namespace Scripts.Tenjin
 
         public BaseTenjin tenjin { get; private set; }
 
-        protected override void Awake()
+        protected override void OnAwake()
         {
-            base.Awake();
+            base.OnAwake();
             if (!Valid) return;
             this.BindRemoteConfig();
             if (string.IsNullOrEmpty(apiKey))
