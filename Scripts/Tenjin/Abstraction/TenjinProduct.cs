@@ -1,10 +1,13 @@
 #if UNITY_PURCHASING
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Analytics;
 using JetBrains.Annotations;
 using Scripts.RemoteConfig;
 using Scripts.Tenjin.Subscriptions;
+using UniRx.Async;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -12,6 +15,21 @@ namespace Scripts.Tenjin.Abstraction
 {
     public class TenjinProduct : ITenjinProduct
     {
+        public static string CustomReportingBaseUrl { get; private set; } = null;
+        public static HttpClient CustomReportingClient { get; private set; } = null;
+
+        public static void Initialize(string customReportingBaseUrl = null)
+        {
+            CustomReportingBaseUrl = customReportingBaseUrl;
+            CustomReportingClient = null;
+            if (customReportingBaseUrl != null)
+            {
+                CustomReportingClient = new HttpClient();
+                CustomReportingClient.BaseAddress = new Uri(CustomReportingBaseUrl);
+                CustomReportingClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
+        }
+        
         public static ITenjinProduct Get(Product product)
         {
             #if !STENCIL_TENJIN
@@ -137,6 +155,11 @@ namespace Scripts.Tenjin.Abstraction
             }
         }
 
+        public virtual UniTask ReportSubscriptionPurchase()
+        {
+            return UniTask.CompletedTask;
+        }
+
         public void TrackPurchase()
         {
             try
@@ -147,6 +170,7 @@ namespace Scripts.Tenjin.Abstraction
                 {
                     // submethod will call refresh.
                     Debug.Log($"TenjinProduct: TrackPurchase -> CheckSubscription {productId}");
+                    ReportSubscriptionPurchase();
                     CheckSubscription();
                 }
                 else

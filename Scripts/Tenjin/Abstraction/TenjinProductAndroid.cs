@@ -1,6 +1,10 @@
-#if STENCIL_TENJIN && UNITY_ANDROID
+//#if STENCIL_TENJIN && UNITY_ANDROID
 
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using UniRx.Async;
+using UnityEngine;
 using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin.Abstraction
@@ -21,7 +25,13 @@ namespace Scripts.Tenjin.Abstraction
             signature = (string)gpDetails["signature"];
             CheckNotNull(signature, "gpSig");
         }
+
+        public override async UniTask ReportSubscriptionPurchase()
+        {
+            await new PurchaseReporter(product, CustomReportingClient)
+                .ReportAndroid(receipt, signature);
+        }
     }
 }
 
-#endif
+//#endif

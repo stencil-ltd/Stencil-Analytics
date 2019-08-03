@@ -1,4 +1,5 @@
 #if STENCIL_TENJIN && UNITY_IOS
+using UniRx.Async;
 using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin.Abstraction
@@ -15,6 +16,12 @@ namespace Scripts.Tenjin.Abstraction
             transactionId = product.transactionID;
             receipt = payload;
             signature = null; 
+        }
+
+        public override async UniTask ReportSubscriptionPurchase()
+        {
+            await new PurchaseReporter(product, CustomReportingClient)
+                .ReportIos(receipt, transactionId);
         }
     }
 }
