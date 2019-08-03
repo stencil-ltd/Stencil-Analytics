@@ -178,7 +178,11 @@ namespace Scripts.Tenjin.Abstraction
                 {
                     // submethod will call refresh.
                     Debug.Log($"TenjinProduct: TrackPurchase -> CheckSubscription {productId}");
-                    if (remoteTracking) ReportSubscriptionPurchase();
+                    if (remoteTracking)
+                    {
+                        Refresh();
+                        ReportSubscriptionPurchase();
+                    }
                     CheckSubscription();
                 }
                 else

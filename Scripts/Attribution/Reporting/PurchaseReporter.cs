@@ -11,12 +11,21 @@ using UnityEngine.Purchasing;
 using UnityEngine.iOS;
 #endif
 
+#if STENCIL_JSON_NET
+using Newtonsoft.Json;
+#endif
+
 namespace Scripts.Tenjin
 {
     public class PurchaseReporter
     {
         private static readonly string googleEndpoint = "googleRegisterPurchase";
         private static readonly string appleEndpoint = "appleRegisterPurchase";
+
+        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore
+        };
         
         public readonly Product product;
         public readonly HttpClient client;
@@ -33,10 +42,6 @@ namespace Scripts.Tenjin
         private async UniTask<RegisterPayload> CreatePayload(string receipt)
         {
             await UniTask.WaitWhile(() => _adId == null);
-            var os = SystemInfo.operatingSystem;
-            var osVersion = os.Split(' ').Last();
-            if (Application.platform == RuntimePlatform.Android) 
-                osVersion = osVersion.Replace("API-", "");
             var locale = CultureInfo.CurrentCulture.DisplayName;
             return new RegisterPayload
             {
@@ -47,7 +52,7 @@ namespace Scripts.Tenjin
                 bundle_id = Application.identifier,
                 country = locale.Split('-').Last(),
                 currency = product.metadata.isoCurrencyCode,
-                os_version = osVersion,
+                // TODO os_version
                 // TODO os_version_release,
                 app_version = Application.version,
                 // TODO build_id,
@@ -56,13 +61,23 @@ namespace Scripts.Tenjin
             };
         }
 
+        private StringContent CreateContent(RegisterPayload payload)
+        {
+            var json = "";
+            #if STENCIL_JSON_NET
+                json = JsonConvert.SerializeObject(payload, jsonSettings);
+            #else
+                json = JsonUtility.ToJson(payload);
+            #endif
+            return new StringContent(json, Encoding.UTF8, "application/json");
+        }
+
         public async UniTask<HttpResponseMessage> ReportAndroid(string receipt, string signature)
         {
             if (client == null) return null;
             var payload = await CreatePayload(receipt);
             payload.signature = signature;
-            var content = new StringContent(JsonUtility.ToJson(payload), Encoding.UTF8, "application/json");
-            return await client.PostAsync(googleEndpoint, content);
+            return await client.PostAsync(googleEndpoint, CreateContent(payload));
         }
 
         public async UniTask<HttpResponseMessage> ReportIos(string receipt, string transactionId)
@@ -73,8 +88,7 @@ namespace Scripts.Tenjin
             #if UNITY_IOS
             payload.developer_device_id = Device.vendorIdentifier;
             #endif
-            var content = new StringContent(JsonUtility.ToJson(payload), Encoding.UTF8, "application/json");
-            return await client.PostAsync(appleEndpoint, content);
+            return await client.PostAsync(appleEndpoint, CreateContent(payload));
         }
     }
 }
