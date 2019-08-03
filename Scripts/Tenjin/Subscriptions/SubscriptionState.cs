@@ -1,10 +1,8 @@
-
-using JetBrains.Annotations;
 #if UNITY_PURCHASING
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using Scripts.Prefs;
-using Scripts.RemoteConfig;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using Util;
