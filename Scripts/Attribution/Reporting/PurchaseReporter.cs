@@ -56,25 +56,25 @@ namespace Scripts.Tenjin
             };
         }
 
-        public async UniTask ReportAndroid(string receipt, string signature)
+        public async UniTask<HttpResponseMessage> ReportAndroid(string receipt, string signature)
         {
-            if (client == null) return;
+            if (client == null) return null;
             var payload = await CreatePayload(receipt);
             payload.signature = signature;
             var content = new StringContent(JsonUtility.ToJson(payload), Encoding.UTF8, "application/json");
-            await client.PostAsync(googleEndpoint, content);
+            return await client.PostAsync(googleEndpoint, content);
         }
 
-        public async UniTask ReportIos(string receipt, string transactionId)
+        public async UniTask<HttpResponseMessage> ReportIos(string receipt, string transactionId)
         {
-            if (client == null) return;
+            if (client == null) return null;
             var payload = await CreatePayload(receipt);
             payload.transaction_id = transactionId;
             #if UNITY_IOS
             payload.developer_device_id = Device.vendorIdentifier;
             #endif
             var content = new StringContent(JsonUtility.ToJson(payload), Encoding.UTF8, "application/json");
-            await client.PostAsync(appleEndpoint, content);
+            return await client.PostAsync(appleEndpoint, content);
         }
     }
 }

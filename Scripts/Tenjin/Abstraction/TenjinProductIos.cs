@@ -24,9 +24,16 @@ namespace Scripts.Tenjin.Abstraction
         {
             try
             {
-                await new PurchaseReporter(product, CustomReportingClient)
+                var response = await new PurchaseReporter(product, CustomReportingClient)
                     .ReportIos(receipt, transactionId);
-                Debug.Log($"Tenjin: Successfully registered purchase with firebase.");
+                if (response?.IsSuccessStatusCode != false)
+                {
+                    Debug.Log($"Tenjin: Successfully registered purchase with firebase.");                    
+                }
+                else
+                {
+                    Debug.LogError($"Tenjin: Could not report to firebase: {response.ReasonPhrase}");
+                }
             }
             catch (Exception e)
             {
