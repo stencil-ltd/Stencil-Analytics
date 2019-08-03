@@ -1,5 +1,8 @@
 #if STENCIL_TENJIN && UNITY_IOS
+using System;
+using Analytics;
 using UniRx.Async;
+using UnityEngine;
 using UnityEngine.Purchasing;
 
 namespace Scripts.Tenjin.Abstraction
@@ -19,8 +22,16 @@ namespace Scripts.Tenjin.Abstraction
 
         public override async UniTask ReportSubscriptionPurchase()
         {
-            await new PurchaseReporter(product, CustomReportingClient)
-                .ReportIos(receipt, transactionId);
+            try
+            {
+                await new PurchaseReporter(product, CustomReportingClient)
+                    .ReportIos(receipt, transactionId);
+                Debug.Log($"Tenjin: Successfully registered purchase with firebase.");
+            }
+            catch (Exception e)
+            {
+                Tracking.LogException(e);
+            }
         }
     }
 }
