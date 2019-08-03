@@ -20,9 +20,6 @@ namespace Scripts.Tenjin.Subscriptions
         public readonly TimeSpan freeInterval;
         public readonly TimeSpan repeatInterval;
 
-        public readonly bool prod;
-        public readonly bool shorten;
-
         public DateTime? FirstPurchaseDate
         {
             get => StencilPrefs.Default.GetDateTime($"stencil_sub_first_purchase_{id}");
@@ -50,12 +47,10 @@ namespace Scripts.Tenjin.Subscriptions
         public SubscriptionState(Product product)
         {
             this.product = product;
-            prod = StencilRemote.IsProd();
-            shorten = !prod && StencilPlatforms.IsAndroid();
             id = product.definition.id;
             info = new SubscriptionManager(product, GetIntroJson()).getSubscriptionInfo();
-            freeInterval = !shorten ? info.getFreeTrialPeriod() : TimeSpan.FromMinutes(3);
-            repeatInterval = !shorten ? info.getSubscriptionPeriod() : TimeSpan.FromMinutes(5);
+            freeInterval = info.getFreeTrialPeriod();
+            repeatInterval = info.getSubscriptionPeriod();
             if (repeatInterval == TimeSpan.Zero)
             {
                 var recorded = RecordedRepeatInterval;
