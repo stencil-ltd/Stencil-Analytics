@@ -107,17 +107,22 @@ namespace Scripts.Tenjin.Abstraction
                 {
                     Debug.Log($"TenjinProduct: First Charge: {productId}");
                     OnTrackPurchase();
-                    subscription.LastCharge = now.Date;
+                    subscription.LastCharge = now;
                     return;
                 }
 
                 var next = last.Value + subscription.repeatInterval;
                 var count = 0;
-                while (next < now)
+                while (next.ToUniversalTime() < now.ToUniversalTime())
                 {
                     Debug.Log($"TenjinProduct: One valid charge {productId}");
                     count++;
                     next += subscription.repeatInterval;
+
+                    if (count > 100)
+                    {
+                        throw new Exception("Recorded more than 100 renewals of subscription.");
+                    }
                 }
                 if (count > 0)
                 {
