@@ -79,6 +79,7 @@ namespace Scripts.Tenjin.Subscriptions
             FirstPurchaseDate = null;
             FirstChargeDate = null;
             LastCharge = null;
+            RecordedRepeatInterval = null;
         }
 
         /**
