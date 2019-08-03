@@ -73,7 +73,7 @@ namespace Scripts.Tenjin.Abstraction
             this.product = product;
             this.tenjin = tenjin;
             this.BindRemoteConfig();
-            if (!StencilRemote.IsProd()) 
+            if (!Application.isEditor && !StencilRemote.IsProd()) 
                 remoteTracking = true;
         }
 
