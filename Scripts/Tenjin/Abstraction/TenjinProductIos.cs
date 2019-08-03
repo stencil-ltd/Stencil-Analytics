@@ -6,7 +6,6 @@ namespace Scripts.Tenjin.Abstraction
 {
     public class TenjinProductIos : TenjinProduct
     {
-
         public TenjinProductIos(StencilTenjin tenjin, Product product) : base(tenjin, product)
         {}
 
