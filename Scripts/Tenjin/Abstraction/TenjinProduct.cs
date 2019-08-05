@@ -65,16 +65,10 @@ namespace Scripts.Tenjin.Abstraction
         // Subscription Only.
         [CanBeNull] protected SubscriptionState subscription;
 
-        [RemoteField("tenjin_remote_tracking")]
-        protected bool remoteTracking = false;
-
         protected TenjinProduct(StencilTenjin tenjin, Product product)
         {
             this.product = product;
             this.tenjin = tenjin;
-            this.BindRemoteConfig();
-            if (!Application.isEditor && !StencilRemote.IsProd()) 
-                remoteTracking = true;
         }
 
         protected virtual void Refresh()
@@ -132,7 +126,7 @@ namespace Scripts.Tenjin.Abstraction
                 if (last == null)
                 {
                     Debug.Log($"TenjinProduct: First Charge: {productId}");
-                    if (!remoteTracking) OnTrackPurchase();
+                    OnTrackPurchase();
                     subscription.LastCharge = now;
                     return;
                 }
@@ -153,7 +147,7 @@ namespace Scripts.Tenjin.Abstraction
                 if (count > 0)
                 {
                     Debug.Log($"TenjinProduct: Charge x{count} {productId}");
-                    if (!remoteTracking) OnTrackPurchase(count);
+                    OnTrackPurchase(count);
                     subscription.LastCharge = next;
                 }
             }
@@ -178,11 +172,6 @@ namespace Scripts.Tenjin.Abstraction
                 {
                     // submethod will call refresh.
                     Debug.Log($"TenjinProduct: TrackPurchase -> CheckSubscription {productId}");
-                    if (remoteTracking)
-                    {
-                        Refresh();
-                        ReportSubscriptionPurchase();
-                    }
                     CheckSubscription();
                 }
                 else
