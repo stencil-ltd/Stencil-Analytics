@@ -1,3 +1,4 @@
+#if UNITY_PURCHASING
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -21,11 +22,6 @@ namespace Scripts.Tenjin
     {
         private static readonly string googleEndpoint = "googleRegisterPurchase";
         private static readonly string appleEndpoint = "appleRegisterPurchase";
-
-        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore
-        };
         
         public readonly Product product;
         public readonly HttpClient client;
@@ -65,7 +61,11 @@ namespace Scripts.Tenjin
         {
             var json = "";
             #if STENCIL_JSON_NET
-                json = JsonConvert.SerializeObject(payload, jsonSettings);
+            var jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            json = JsonConvert.SerializeObject(payload, jsonSettings);
             #else
                 json = JsonUtility.ToJson(payload);
             #endif
@@ -92,3 +92,5 @@ namespace Scripts.Tenjin
         }
     }
 }
+
+#endif

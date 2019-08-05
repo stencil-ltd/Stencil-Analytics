@@ -1,4 +1,4 @@
-//#if STENCIL_TENJIN && UNITY_ANDROID
+#if STENCIL_TENJIN && UNITY_ANDROID
 
 using System;
 using System.Collections.Generic;
@@ -50,4 +50,4 @@ namespace Scripts.Tenjin.Abstraction
     }
 }
 
-//#endif
+#endif
