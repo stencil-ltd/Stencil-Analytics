@@ -21,6 +21,7 @@ namespace Analytics
         public bool Silent;
 
         private readonly List<ITracker> _trackers = new List<ITracker>();
+        private readonly List<ITrackingInterceptor> _interceptors = new List<ITrackingInterceptor>();
 
         private Tracking()
         {
@@ -37,14 +38,19 @@ namespace Analytics
 
         public ITracker Track(string name, Dictionary<string, object> eventData = null)
         {
+            var args = eventData ?? new Dictionary<string, object>();
+            foreach (var interceptor in _interceptors) 
+                interceptor.ProcessArgs(args);
+            if (args.Count == 0) args = eventData;
+
             name = Sanitize(name);
-            eventData = Sanitize(eventData);
+            args = Sanitize(args);
             
-            var json = eventData == null ? "[]" : string.Join(", ", eventData.ToList());
+            var json = args == null ? "[]" : string.Join(", ", args.ToList());
             if (!Silent) Debug.Log($"Track Event: {name}\n{json}");
             if (Enabled)
                 foreach (var tracker in _trackers)
-                    tracker.Track(name, eventData);
+                    tracker.Track(name, args);
             return this;
         }
 
@@ -56,6 +62,18 @@ namespace Analytics
             if (Enabled)
                 foreach (var tracker in _trackers)
                     tracker.SetUserProperty(name, value);
+            return this;
+        }
+
+        public Tracking AddInterceptor(ITrackingInterceptor interceptor)
+        {
+            _interceptors.Add(interceptor);
+            return this;
+        }
+
+        public Tracking RemoveInterceptor(ITrackingInterceptor interceptor)
+        {
+            _interceptors.Remove(interceptor);
             return this;
         }
 
