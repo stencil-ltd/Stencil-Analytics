@@ -21,7 +21,6 @@ namespace Analytics
         public bool Silent;
 
         private readonly List<ITracker> _trackers = new List<ITracker>();
-        private readonly List<ITrackingInterceptor> _interceptors = new List<ITrackingInterceptor>();
 
         private Tracking()
         {
@@ -38,19 +37,14 @@ namespace Analytics
 
         public ITracker Track(string name, Dictionary<string, object> eventData = null)
         {
-            var args = eventData ?? new Dictionary<string, object>();
-            foreach (var interceptor in _interceptors) 
-                interceptor.ProcessArgs(args);
-            if (args.Count == 0) args = eventData;
-
             name = Sanitize(name);
-            args = Sanitize(args);
+            eventData = Sanitize(eventData);
             
-            var json = args == null ? "[]" : string.Join(", ", args.ToList());
+            var json = eventData == null ? "[]" : string.Join(", ", eventData.ToList());
             if (!Silent) Debug.Log($"Track Event: {name}\n{json}");
             if (Enabled)
                 foreach (var tracker in _trackers)
-                    tracker.Track(name, args);
+                    tracker.Track(name, eventData);
             return this;
         }
 
@@ -65,18 +59,6 @@ namespace Analytics
             return this;
         }
 
-        public Tracking AddInterceptor(ITrackingInterceptor interceptor)
-        {
-            _interceptors.Add(interceptor);
-            return this;
-        }
-
-        public Tracking RemoveInterceptor(ITrackingInterceptor interceptor)
-        {
-            _interceptors.Remove(interceptor);
-            return this;
-        }
-
         public static void LogException(string reason)
         {
             LogException(new Exception(reason));
@@ -87,7 +69,15 @@ namespace Analytics
             Debug.LogException(e);
             #if STENCIL_FIREBASE
             Crashlytics.LogException(e);
-#endif
+            #endif
+        }
+
+        public static void SetCustomKey(string key, string value)
+        {
+            Debug.Log($"SetString: {key} = {value}");
+            #if STENCIL_FIREBASE
+            Crashlytics.SetCustomKey(key, value);
+            #endif
         }
 
         public static void Report(string name, string reason = null, string stackTraceString = null)
@@ -99,6 +89,9 @@ namespace Analytics
         public static void Record(string message)
         {
             Debug.Log(message);
+            #if STENCIL_FIREBASE
+            Crashlytics.Log(message);
+            #endif
         }
 
         public static void Warn(string message)
