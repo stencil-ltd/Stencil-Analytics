@@ -1,5 +1,3 @@
-
-using Binding;
 #if UNITY_PURCHASING
 using System;
 using System.Collections.Generic;
@@ -201,10 +199,9 @@ namespace Scripts.Tenjin.Abstraction
         {
             Debug.Log($"TenjinProduct: Process Receipt: {productId} {currencyCode} {price} {receipt} {signature}");
             if (!StencilRemote.IsProd()) return;
-            #if !STENCIL_TENJIN || UNITY_EDITOR
-            return;
-            #endif
+            #if STENCIL_TENJIN && !UNITY_EDITOR
             tenjin.tenjin.Transaction(productId, currencyCode, count, price, transactionId, receipt, signature);
+            #endif
         }
         
         protected void CheckNotNull(object field, string name)
