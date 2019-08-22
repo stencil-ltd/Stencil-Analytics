@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Scripts.Tenjin
 {
-    public partial class StencilTenjin : PermanentV2<StencilTenjin>
+    public class StencilTenjin : PermanentV2<StencilTenjin>
     {
         public string apiKey;
         
@@ -21,10 +21,9 @@ namespace Scripts.Tenjin
 
         public BaseTenjin tenjin { get; private set; }
 
-        protected override void OnAwake()
+        protected override void OnStart()
         {
-            base.OnAwake();
-            if (!Valid) return;
+            base.OnStart();
             this.BindRemoteConfig();
             if (string.IsNullOrEmpty(apiKey))
             {
@@ -45,7 +44,7 @@ namespace Scripts.Tenjin
         }
         private void OnApplicationPause(bool pauseStatus)
         {
-            if (!pauseStatus) Connect();
+            if (!pauseStatus && tenjin != null) Connect();
         }
 #endif
     }
