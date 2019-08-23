@@ -3,7 +3,6 @@
 using System;
 using System.Threading.Tasks;
 using Firebase.Auth;
-using Init;
 using JetBrains.Annotations;
 
 namespace Scripts.Auth
@@ -21,21 +20,8 @@ namespace Scripts.Auth
 
         public static event EventHandler IdTokenChanged;
         
-        static StencilAuth()
+        public static void Init()
         {
-            if (GameInit.FirebaseReady)
-            {
-                _Init();
-            }
-            else
-            {
-                GameInit.OnFirebaseInit += (sender, args) => _Init();
-            }
-        }
-
-        private static void _Init()
-        {
-            if (!GameInit.FirebaseReady) return;
             IsReady = true;
             FirebaseAuth.DefaultInstance.IdTokenChanged += IdTokenChanged;
             IdTokenChanged?.Invoke(null, EventArgs.Empty);
@@ -43,7 +29,7 @@ namespace Scripts.Auth
 
         public static Task<FirebaseUser> SignInAnonymouslyAsync()
         {
-            if (GameInit.FirebaseReady)
+            if (IsReady)
                 return FirebaseAuth.DefaultInstance.SignInAnonymouslyAsync();
             return Task.FromException<FirebaseUser>(new Exception("Firebase not ready"));
         }

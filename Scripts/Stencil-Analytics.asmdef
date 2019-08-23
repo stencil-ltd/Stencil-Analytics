@@ -1,0 +1,14 @@
+{
+    "name": "Stencil-Analytics",
+    "references": [
+        "GUID:b060e4da221ad426bb8e6a91bba572bc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

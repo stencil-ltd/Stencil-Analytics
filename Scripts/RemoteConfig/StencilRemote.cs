@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Init;
 using UnityEngine;
 using Util;
 using Versions;
@@ -9,6 +8,8 @@ using Developers = Dev.Developers;
 #if STENCIL_FIREBASE
 using Firebase;
 using Firebase.RemoteConfig;
+using Scripts.Firebase;
+
 #endif
 
 namespace Scripts.RemoteConfig
@@ -50,7 +51,7 @@ namespace Scripts.RemoteConfig
         public static bool IsProd()
         {
             if (Developers.Enabled) return false;
-            if (!GameInit.FirebaseReady)
+            if (!StencilFirebase.IsReady)
             {
                 if (!_hasLogged)
                 {

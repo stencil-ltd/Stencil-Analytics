@@ -1,11 +1,12 @@
 ﻿#if STENCIL_FIREBASE
+using Dirichlet.Numerics;
 using Firebase.Crashlytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dirichlet.Numerics;
+using Firebase;
 using Firebase.Analytics;
-using Init;
+using Scripts.Firebase;
 using Stencil.Util;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Analytics
     {
         public ITracker Track(string name, Dictionary<string, object> eventData)
         {
-            if (!GameInit.FirebaseReady) return this;
+            if (!StencilFirebase.IsReady) return this;
             if (eventData == null)
             {
                 FirebaseAnalytics.LogEvent(name);
@@ -55,7 +56,7 @@ namespace Analytics
 
         public ITracker SetUserProperty(string name, object value)
         {
-            if (!GameInit.FirebaseReady) return this;
+            if (!StencilFirebase.IsReady) return this;
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
             #if STENCIL_FIREBASE
             Crashlytics.Log($"Set Property {name} = {value}");
