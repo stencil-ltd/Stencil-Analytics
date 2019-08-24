@@ -5,22 +5,23 @@ using Firebase.RemoteConfig;
 using Scripts.Auth;
 using Scripts.RemoteConfig;
 using Firebase;
+using Scripts.Build;
+using UI;
 using UniRx.Async;
 using UnityEngine;
 
 namespace Stencil.Analytics.Firebase
 {
-    public static class StencilFirebase
+    public class StencilFirebase : Controller<StencilFirebase>
     {
         public static bool IsReady { get; private set; }
         public static event EventHandler<bool> OnReady;
         
         private static UniTask? _init;
 
-        public static UniTask Init()
+        private void Start()
         {
-            if (_init == null) _init = _Init();
-            return _init.Value;
+            var _ = _Init();
         }
 
         private static async UniTask _Init()
