@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 
 #if STENCIL_FIREBASE
 using Firebase.Crashlytics;
+using Stencil.Analytics.Firebase;
 #endif
 
 namespace Analytics

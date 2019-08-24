@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Stencil.Analytics.Firebase;
 using UnityEngine;
 using Util;
 using Versions;
@@ -8,8 +9,6 @@ using Developers = Dev.Developers;
 #if STENCIL_FIREBASE
 using Firebase;
 using Firebase.RemoteConfig;
-using Scripts.Firebase;
-
 #endif
 
 namespace Scripts.RemoteConfig

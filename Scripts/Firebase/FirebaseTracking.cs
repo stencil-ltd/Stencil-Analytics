@@ -1,16 +1,17 @@
-﻿#if STENCIL_FIREBASE
+﻿
+using Analytics;
+#if STENCIL_FIREBASE
+using Stencil.Analytics.Firebase;
 using Dirichlet.Numerics;
 using Firebase.Crashlytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Firebase;
 using Firebase.Analytics;
-using Scripts.Firebase;
 using Stencil.Util;
 using UnityEngine;
 
-namespace Analytics
+namespace Stencil.Analytics.Firebase
 {
     public class FirebaseTracking : ITracker
     {
