@@ -71,15 +71,7 @@ namespace Analytics
             Crashlytics.LogException(e);
             #endif
         }
-
-        public static void SetCustomKey(string key, string value)
-        {
-            Debug.Log($"SetString: {key} = {value}");
-            #if STENCIL_FIREBASE
-            Crashlytics.SetCustomKey(key, value);
-            #endif
-        }
-
+        
         public static void Report(string name, string reason = null, string stackTraceString = null)
         {
             reason = reason != null ? $": {reason}" : "";
