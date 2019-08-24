@@ -16,5 +16,11 @@ namespace Analytics
             tracker.Track(name, dict);
             return tracker;
         }
+
+        public static ITracker Record(this ITracker tracker, string message)
+        {
+            Tracking.Record(message);
+            return tracker;
+        }
     }
 }
