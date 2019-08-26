@@ -5,7 +5,6 @@ using Firebase.RemoteConfig;
 using Scripts.Auth;
 using Scripts.RemoteConfig;
 using Firebase;
-using Scripts.Build;
 using UI;
 using UniRx.Async;
 using UnityEngine;
