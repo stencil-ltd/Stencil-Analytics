@@ -29,6 +29,8 @@ namespace Stencil.Analytics.Firebase
                     try
                     {
                         var value = kv.Value;
+                        if (value == null) 
+                            return new Parameter(kv.Key, null);
                         if (value is double || value is float || value is decimal)
                             return new Parameter(kv.Key, Convert.ToDouble(kv.Value));
                         if (value is long || value is int || value is byte || value is bool)
@@ -44,14 +46,10 @@ namespace Stencil.Analytics.Firebase
                     catch (Exception e)
                     {
                         Debug.LogException(e);
-                        return new Parameter(kv.Key, kv.Value.ToString());
+                        return new Parameter(kv.Key, kv.Value?.ToString());
                     }
                 }).ToArray());
             }
-
-            #if STENCIL_FIREBASE
-            Crashlytics.Log($"{name}: {Json.Serialize(eventData)}");
-            #endif
             return this;
         }
 
@@ -61,7 +59,7 @@ namespace Stencil.Analytics.Firebase
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
             #if STENCIL_FIREBASE
             Crashlytics.Log($"Set Property {name} = {value}");
-            Crashlytics.SetCustomKey(name, value?.ToString());
+            Crashlytics.SetCustomKey(name, value?.ToString() ?? "");
             #endif
             return this;
         }
