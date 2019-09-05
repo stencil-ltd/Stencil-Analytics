@@ -36,6 +36,16 @@ namespace Analytics
             #endif
         }
 
+        public void Add(ITracker tracker)
+        {
+            _trackers.Add(tracker);
+        }
+        
+        public void Remove(ITracker tracker)
+        {
+            _trackers.Remove(tracker);
+        }
+
         public ITracker Track(string name, Dictionary<string, object> eventData = null)
         {
             name = Sanitize(name);
