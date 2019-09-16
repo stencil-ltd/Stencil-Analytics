@@ -12,6 +12,18 @@ namespace RemoteConfig
         public bool enableInDebug = true;
         public bool listen = true;
 
+        public static bool IsVisible(string key, bool invert = false, bool defaultFieldValue = false, bool enableInDebug = true)
+        {
+            if (enableInDebug && StencilRemote.IsDeveloper()) return true;
+#if !STENCIL_FIREBASE
+                return null;
+#else
+            var retval = StencilRemote.BoolValue(key, defaultFieldValue);
+            if (invert) retval = !retval;
+            return retval;
+#endif
+        }
+
         public override void Register(ActiveManager manager)
         {
             base.Register(manager);
@@ -32,14 +44,7 @@ namespace RemoteConfig
 
         public override bool? Check()
         {
-            if (enableInDebug && StencilRemote.IsDeveloper()) return true;
-#if !STENCIL_FIREBASE
-                return null;
-#else
-            var retval = StencilRemote.BoolValue(key, defaultFieldValue);
-            if (invert) retval = !retval;
-            return retval;
-#endif
+            return IsVisible(key, invert, defaultFieldValue, enableInDebug);
         }
     }
 }
