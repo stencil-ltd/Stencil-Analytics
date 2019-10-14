@@ -89,14 +89,6 @@ namespace Analytics
             Debug.LogException(new StencilReportException($"{name}{reason}", stackTraceString));
         }
 
-        public static void Record(string message)
-        {
-            Debug.Log(message);
-            #if STENCIL_FIREBASE
-            Crashlytics.Log(message);
-            #endif
-        }
-
         public static void Warn(string message)
         {
             var stacktrace = new StackTrace(1, true);

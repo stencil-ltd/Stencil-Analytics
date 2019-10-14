@@ -1,20 +1,23 @@
-﻿
+﻿#if STENCIL_FIREBASE
 using Analytics;
-#if STENCIL_FIREBASE
-using Stencil.Analytics.Firebase;
 using Dirichlet.Numerics;
 using Firebase.Crashlytics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Firebase.Analytics;
-using Stencil.Util;
 using UnityEngine;
 
 namespace Stencil.Analytics.Firebase
 {
     public class FirebaseTracking : ITracker
     {
+        public FirebaseTracking()
+        {
+            Application.logMessageReceivedThreaded += (message, trace, type) 
+                => Crashlytics.Log($"{type}: {message}");
+        }
+
         public ITracker Track(string name, Dictionary<string, object> eventData)
         {
             if (!StencilFirebase.IsReady) return this;

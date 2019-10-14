@@ -5,6 +5,7 @@ using Firebase.RemoteConfig;
 using Scripts.Auth;
 using Scripts.RemoteConfig;
 using Firebase;
+using Firebase.Crashlytics;
 using UI;
 using UniRx.Async;
 using UnityEngine;
@@ -45,6 +46,7 @@ namespace Stencil.Analytics.Firebase
                 var _ = OnRemote(cache);
                 SetupPush();
             }
+
             StencilAuth.Init();
             OnReady?.Invoke(null, success);
         }
