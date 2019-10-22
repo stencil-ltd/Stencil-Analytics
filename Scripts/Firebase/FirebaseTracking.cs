@@ -1,4 +1,6 @@
-﻿#if STENCIL_FIREBASE
+﻿
+using Firebase;
+#if STENCIL_FIREBASE
 using Analytics;
 using Dirichlet.Numerics;
 using Firebase.Crashlytics;
@@ -15,7 +17,20 @@ namespace Stencil.Analytics.Firebase
         public FirebaseTracking()
         {
             Application.logMessageReceivedThreaded += (message, trace, type) 
-                => Crashlytics.Log($"{type}: {message}");
+                =>
+            {
+                switch (type)
+                {
+                    case LogType.Error:
+                    case LogType.Assert:
+                    case LogType.Exception:
+                        Crashlytics.LogException(new ExceptionForCrashlytics($"{type}: {message}", trace));
+                        break;
+                    default:
+                        Crashlytics.Log($"{type}: {message}");
+                        break;
+                }
+            };
         }
 
         public ITracker Track(string name, Dictionary<string, object> eventData)
