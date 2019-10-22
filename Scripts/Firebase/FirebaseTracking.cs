@@ -24,7 +24,7 @@ namespace Stencil.Analytics.Firebase
                     case LogType.Error:
                     case LogType.Assert:
                     case LogType.Exception:
-                        Crashlytics.LogException(new ExceptionForCrashlytics($"{type}: {message}", trace));
+                        Crashlytics.LogException(new ExceptionForCrashlytics(message, trace));
                         break;
                     default:
                         Crashlytics.Log($"{type}: {message}");
