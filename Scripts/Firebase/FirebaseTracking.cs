@@ -1,5 +1,4 @@
-﻿
-using Firebase;
+﻿using Firebase;
 #if STENCIL_FIREBASE
 using Analytics;
 using Dirichlet.Numerics;
@@ -16,21 +15,22 @@ namespace Stencil.Analytics.Firebase
     {
         public FirebaseTracking()
         {
-            Application.logMessageReceivedThreaded += (message, trace, type) 
-                =>
+            if (!Application.isEditor)
             {
-                switch (type)
-                {
-                    case LogType.Error:
-                    case LogType.Assert:
-                    case LogType.Exception:
-                        Crashlytics.LogException(new ExceptionForCrashlytics(message, trace));
-                        break;
-                    default:
-                        Crashlytics.Log($"{type}: {message}");
-                        break;
-                }
-            };
+                Application.logMessageReceivedThreaded += (message, trace, type) => {
+                    switch (type)
+                    {
+                        case LogType.Error:
+                        case LogType.Assert:
+                        case LogType.Exception:
+                            Crashlytics.LogException(new ExceptionForCrashlytics(message, trace));
+                            break;
+                        default:
+                            Crashlytics.Log($"{type}: {message}");
+                            break;
+                    }
+                };
+            }
         }
 
         public ITracker Track(string name, Dictionary<string, object> eventData)
@@ -75,10 +75,10 @@ namespace Stencil.Analytics.Firebase
         {
             if (!StencilFirebase.IsReady) return this;
             FirebaseAnalytics.SetUserProperty(name, value?.ToString());
-            #if STENCIL_FIREBASE
+#if STENCIL_FIREBASE
             Crashlytics.Log($"Set Property {name} = {value}");
             Crashlytics.SetCustomKey(name, value?.ToString() ?? "");
-            #endif
+#endif
             return this;
         }
     }
