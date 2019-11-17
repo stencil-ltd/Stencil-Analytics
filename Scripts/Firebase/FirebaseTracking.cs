@@ -1,5 +1,5 @@
-﻿using Firebase;
-#if STENCIL_FIREBASE
+﻿#if STENCIL_FIREBASE
+using Firebase;
 using Analytics;
 using Dirichlet.Numerics;
 using Firebase.Crashlytics;

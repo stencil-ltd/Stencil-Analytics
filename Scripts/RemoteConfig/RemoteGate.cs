@@ -16,7 +16,7 @@ namespace RemoteConfig
         {
             if (enableInDebug && StencilRemote.IsDeveloper()) return true;
 #if !STENCIL_FIREBASE
-                return null;
+            return true;
 #else
             var retval = StencilRemote.BoolValue(key, defaultFieldValue);
             if (invert) retval = !retval;
