@@ -23,7 +23,7 @@ namespace Scripts.Auth
         public static void Init()
         {
             IsReady = true;
-            FirebaseAuth.DefaultInstance.IdTokenChanged += IdTokenChanged;
+            FirebaseAuth.DefaultInstance.IdTokenChanged += (sender, args) => IdTokenChanged?.Invoke(sender, args);
             IdTokenChanged?.Invoke(null, EventArgs.Empty);
         }
 

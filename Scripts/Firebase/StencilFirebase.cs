@@ -30,7 +30,6 @@ namespace Stencil.Analytics.Firebase
             var success = dependencyStatus == DependencyStatus.Available;
             if (!success)
                 Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
-            IsReady = success;
 
             await UniTask.SwitchToMainThread();
             
@@ -48,6 +47,7 @@ namespace Stencil.Analytics.Firebase
             }
 
             StencilAuth.Init();
+            IsReady = success;
             OnReady?.Invoke(null, success);
         }
         
